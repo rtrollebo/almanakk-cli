@@ -1,0 +1,10 @@
+
+resolver:
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/14.yaml
+
+packages:
+- .
+
+extra-deps:
+- archive: /Users/rtrollebo/files/Utvikling/almanakk/almanakk-cli/lib/almanakk-lib-1.0.0.0.tar.gz
+

@@ -1,0 +1,88 @@
+module Main where
+
+import System.Environment   
+import Control.Exception
+import Data.List 
+import Data.Time
+import Data.Time.Clock
+import Data.Time.Calendar.OrdinalDate
+import Data.Time.Calendar 
+import Data.Time.LocalTime
+import Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
+import Phase.Moon
+import Application.AppContext (AppContext)
+import Application.Version
+import Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, AlmanacEventEntry, cellestialPhaseToStr)
+import Almanac
+import System.Environment.Blank (getArgs)
+
+
+{--
+Main module of almanakk-cli
+-}
+
+-- Entry point  of almanakk-cli
+main :: IO ()
+main = mainAlmanac
+
+mainAlmanac :: IO ()
+mainAlmanac = do 
+    args <- getArgs
+    case args of
+        [lat, lon] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Nothing)) handler
+        [lat, lon, tz] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Just (read tz :: Int))) handler
+        ["--version"] -> putStrLn $ ("v" ++ getVersion)
+        _             -> putStrLn $ "almanakk v." 
+            ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2023 "
+            ++ "\nUsage: \nalmanakk <latitude> <longitude> [time_zone].\n"
+
+sunRiseSetTzMain :: Double -> Double -> Maybe Int -> IO()
+sunRiseSetTzMain lat lon tzInt = do
+    t <- getCurrentTime
+    tzsystem <- getTimeZone t
+    let sr = sunRisingSetting t Rising lon lat
+    let ss = sunRisingSetting t Setting lon lat
+    let deltaRise = sunRisingSettingDailyDelta t lon lat Rising
+    let deltaSet = sunRisingSettingDailyDelta t lon lat Setting 
+    let tz = case tzInt of 
+                (Nothing) -> tzsystem
+                (Just tza) -> hoursToTimeZone tza
+    let moonPh = MoonPhase t
+    let newmoon = new moonPh
+    let fullmoon = full moonPh
+    let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
+    let phse = phase moonPh
+    composeResult t lat lon tz sr ss deltaRise deltaSet (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
+
+composeResult :: UTCTime 
+    -> Double -> Double -> TimeZone 
+    -> Either AppContext (Maybe UTCTime) 
+    -> Either AppContext (Maybe UTCTime) 
+    -> Maybe NominalDiffTime -> Maybe NominalDiffTime 
+    -> [AlmanacEventEntry]
+    -> [(String, String)]
+    -> IO()
+composeResult t lat lon tz sr ss deltaRise deltaSet aee phse = 
+    putStr 
+        (
+            "\nObserver data\n" ++
+            (toStr [
+                ("Date", utcTimeToDayStr t), 
+                ("Time zone", show tz),
+                ("Location", "lat " ++ show lat ++ " lon " ++ show lon)]) ++
+            "\nSolar celestial rising and setting\n" ++
+            (toStr [
+                ("Sunrise", processResult tz sr),
+                ("Sunset", processResult tz ss),
+                ("Δ rise", processDeltaRiseResult deltaRise),
+                ("Δ set", processDeltaRiseResult deltaSet)]) ++
+            "\nCelestial phase data\n" ++
+            (toStr phse) ++ 
+            "\nNext celestial phase events\n" ++
+            (aeeToStr aee
+            )
+        )
+
+handler :: SomeException -> IO ()
+handler ex = putStrLn $ "Unexpected error occured.\n"
+
