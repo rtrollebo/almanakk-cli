@@ -6,5 +6,5 @@ packages:
 - .
 
 extra-deps:
-- archive: /Users/rtrollebo/files/Utvikling/almanakk/almanakk-cli/lib/almanakk-lib-1.0.0.0.tar.gz
+- archive: ./lib/almanakk-lib-1.0.0.0.tar.gz
 
