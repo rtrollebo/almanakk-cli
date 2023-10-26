@@ -1,4 +1,4 @@
-module Application.View (
+module Almanakk.Application.View (
     processDeltaRiseResult
     , processLunarPhaseResult
     , processResult
@@ -10,8 +10,8 @@ module Application.View (
 ) where
 
 import Data.Time
-import Application.AppContext
-import Almanac
+import Almanakk.Application.AppContext
+import Almanakk.Almanac
 
 
 data AlmanacEventEntry = AlmanacEventEntry { 

@@ -8,12 +8,12 @@ import Data.Time.Clock
 import Data.Time.Calendar.OrdinalDate
 import Data.Time.Calendar 
 import Data.Time.LocalTime
-import Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
-import Phase.Moon
-import Application.AppContext (AppContext)
-import Application.Version
-import Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, AlmanacEventEntry, cellestialPhaseToStr)
-import Almanac
+import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
+import Almanakk.Phase.Moon
+import Almanakk.Application.AppContext (AppContext)
+import Almanakk.Application.Version
+import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, AlmanacEventEntry, cellestialPhaseToStr)
+import Almanakk.Almanac
 import System.Environment.Blank (getArgs)
 
 
