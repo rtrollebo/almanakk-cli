@@ -6,18 +6,28 @@ module Almanakk.Application.View (
     , AlmanacEventEntry (..)
     , celPhaseResultToAee
     , aeeToStr
+    , getCalendarEntries 
+    , calendarEntriesToStr 
     , cellestialPhaseToStr
 ) where
 
 import Data.Time
 import Almanakk.Application.AppContext
 import Almanakk.Almanac
+import Almanakk.Calendar.Calendar (dateOfEaster, dateOfPentecost)
 
 
 data AlmanacEventEntry = AlmanacEventEntry { 
     entryTime :: LocalTime,
     cellestialObject :: CelestialObject,
     cellestialPhaseEvent :: CellestialPhaseEvent } deriving (Show) 
+
+data CalendarEntry = CalendarEntry {
+    -- Basic calendar entry for the standard Christian Calendar
+    -- Temporary type to contain data from newly exposed functions from almanakk-lib
+    -- (to be combined with AlmanacEventEntry later)
+    calendarEntryName :: String,
+    calendarDay :: Maybe Day } deriving (Show)
 
 instance Ord AlmanacEventEntry where 
     compare x y = compare (entryTime x) (entryTime y)
@@ -28,6 +38,25 @@ instance Eq AlmanacEventEntry where
 
 cellestialPhaseToStr :: CellestialPhase -> String
 cellestialPhaseToStr cph = show cph
+
+getCalendarEntries :: UTCTime -> [CalendarEntry]
+getCalendarEntries t = [CalendarEntry "Easter" dateEaster] ++ [CalendarEntry "Pentecost" datePentecost]
+    where dateEaster = case (dateOfEaster t) of
+                     -- dateOfEaster calculates the day of easter from the year in t
+                     (Left _) -> Nothing
+                     (Right d) -> d
+          datePentecost = case (dateOfPentecost t) of
+                     -- dateOfPentecost calculates the day of pentecost from the year in t
+                     (Left _) -> Nothing
+                     (Right d) -> d
+
+calendarEntriesToStr :: [CalendarEntry] -> String
+calendarEntriesToStr [] = ""
+calendarEntriesToStr (CalendarEntry n d:xs) = "  " ++ toBlock n ++ "  " ++ toBlock (showDay d) ++ "\n" ++ (calendarEntriesToStr xs)
+    where showDay :: Maybe Day -> String
+          showDay Nothing = ""
+          showDay (Just d) = show d
+
 
 aeeToStr :: [AlmanacEventEntry] -> String
 aeeToStr [] = ""

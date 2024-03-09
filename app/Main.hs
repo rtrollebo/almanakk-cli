@@ -12,7 +12,7 @@ import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
 import Almanakk.Application.AppContext (AppContext)
 import Almanakk.Application.Version
-import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, AlmanacEventEntry, cellestialPhaseToStr)
+import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, getCalendarEntries, calendarEntriesToStr, AlmanacEventEntry, cellestialPhaseToStr)
 import Almanakk.Almanac
 import System.Environment.Blank (getArgs)
 
@@ -31,10 +31,19 @@ mainAlmanac = do
     case args of
         [lat, lon] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Nothing)) handler
         [lat, lon, tz] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Just (read tz :: Int))) handler
+        ["calendar"] -> catch (calendarMain) handler
         ["--version"] -> putStrLn $ ("v" ++ getVersion)
         _             -> putStrLn $ "almanakk v." 
-            ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2023 "
+            ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2024 "
             ++ "\nUsage: \nalmanakk <latitude> <longitude> [time_zone].\n"
+
+calendarMain :: IO()
+calendarMain = do 
+    t <- getCurrentTime
+    let calEntries = getCalendarEntries t
+    let calEntriesStr = calendarEntriesToStr calEntries
+    putStr "Christian holidays\n\n" -- For now, show holidays based on day of easter. Additional holiday entries to be added later. 
+    putStr calEntriesStr
 
 sunRiseSetTzMain :: Double -> Double -> Maybe Int -> IO()
 sunRiseSetTzMain lat lon tzInt = do
