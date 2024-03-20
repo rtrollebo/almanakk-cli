@@ -5,16 +5,18 @@ module Almanakk.Application.View (
     , toStr
     , AlmanacEventEntry (..)
     , celPhaseResultToAee
-    , aeeToStr
-    , getCalendarEntries 
+    , aeeToStr 
+    , getCalendarEntries
     , calendarEntriesToStr 
     , cellestialPhaseToStr
 ) where
 
 import Data.Time
+import Data.Time(utctDay)
 import Almanakk.Application.AppContext
 import Almanakk.Almanac
 import Almanakk.Calendar.Calendar (dateOfEaster, dateOfPentecost)
+
 
 
 data AlmanacEventEntry = AlmanacEventEntry { 
@@ -27,7 +29,7 @@ data CalendarEntry = CalendarEntry {
     -- Temporary type to contain data from newly exposed functions from almanakk-lib
     -- (to be combined with AlmanacEventEntry later)
     calendarEntryName :: String,
-    calendarDay :: Maybe Day } deriving (Show)
+    calendarEntryDay :: Day } deriving (Show)
 
 instance Ord AlmanacEventEntry where 
     compare x y = compare (entryTime x) (entryTime y)
@@ -36,26 +38,45 @@ instance Eq AlmanacEventEntry where
     x == y = (entryTime x) ==  (entryTime y)  
     x /= y = (entryTime x) /=  (entryTime y)  
 
+instance Ord CalendarEntry where
+    compare x y = compare (calendarEntryDay x) (calendarEntryDay y)
+
+instance Eq CalendarEntry where
+    x == y = (calendarEntryDay x) == (calendarEntryDay y)
+    x == y = (calendarEntryDay x) /= (calendarEntryDay y)
+
 cellestialPhaseToStr :: CellestialPhase -> String
 cellestialPhaseToStr cph = show cph
 
 getCalendarEntries :: UTCTime -> [CalendarEntry]
-getCalendarEntries t = [CalendarEntry "Easter" dateEaster] ++ [CalendarEntry "Pentecost" datePentecost]
-    where dateEaster = case (dateOfEaster t) of
-                     -- dateOfEaster calculates the day of easter from the year in t
-                     (Left _) -> Nothing
-                     (Right d) -> d
-          datePentecost = case (dateOfPentecost t) of
-                     -- dateOfPentecost calculates the day of pentecost from the year in t
-                     (Left _) -> Nothing
-                     (Right d) -> d
+getCalendarEntries t = entriesAll
+    where doe = case (dateOfEaster t) of
+              -- dateOfEaster calculates the day of easter from the year in t
+              (Left _) -> Nothing
+              (Right d) -> d
+          easterEntry = case doe of 
+                  (Just d) -> [CalendarEntry "Easter Sunday" d]
+                  (Nothing) -> []
+          entriesAll 
+            | (length easterEntry) == 0 = []
+            | otherwise = 
+                [CalendarEntry "Transfiguration Sunday" (addDays (-7*7) easterday)]
+                ++ [CalendarEntry "Ash Wednesday" (addDays (-46) easterday)]
+                ++ [CalendarEntry "Palm Sunday" (addDays (-7) easterday)]
+                ++ [CalendarEntry "Maundy Thursday" (addDays (-3) easterday)]
+                ++ [CalendarEntry "Good Friday" (addDays (-2) easterday)]
+                ++ easterEntry
+                ++ [CalendarEntry "Divine Mercy Sunday" (addDays (7) easterday)]
+                ++ [CalendarEntry "Ascension of Jesus" (addDays (39) easterday)]
+                ++ [CalendarEntry "Pentecost" (addDays (7*7) easterday)] 
+                ++ [CalendarEntry "Trinity Sunday" (addDays ((7*7)+7) easterday)]
+                where easterday = calendarEntryDay $ head easterEntry
 
 calendarEntriesToStr :: [CalendarEntry] -> String
 calendarEntriesToStr [] = ""
-calendarEntriesToStr (CalendarEntry n d:xs) = "  " ++ toBlock n ++ "  " ++ toBlock (showDay d) ++ "\n" ++ (calendarEntriesToStr xs)
-    where showDay :: Maybe Day -> String
-          showDay Nothing = ""
-          showDay (Just d) = show d
+calendarEntriesToStr (CalendarEntry n d:xs) = "  " ++ toBlock n ++ "  " ++ toBlock (showDay d) ++ "\n" ++ calendarEntriesToStr xs
+    where showDay :: Day -> String
+          showDay d = show d
 
 
 aeeToStr :: [AlmanacEventEntry] -> String

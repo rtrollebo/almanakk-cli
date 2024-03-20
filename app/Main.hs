@@ -40,7 +40,7 @@ mainAlmanac = do
 calendarMain :: IO()
 calendarMain = do 
     t <- getCurrentTime
-    let calEntries = getCalendarEntries t
+    let calEntries = sort $ getCalendarEntries t
     let calEntriesStr = calendarEntriesToStr calEntries
     putStr "Christian holidays\n\n" -- For now, show holidays based on day of easter. Additional holiday entries to be added later. 
     putStr calEntriesStr
