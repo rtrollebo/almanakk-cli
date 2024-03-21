@@ -1,25 +1,20 @@
-module Main where
+module Main (main) where 
+{- 
+Almanakk Main module
+
+-}
 
 import System.Environment   
 import Control.Exception
-import Data.List 
-import Data.Time
+import Data.List (sort)
 import Data.Time.Clock
-import Data.Time.Calendar.OrdinalDate
-import Data.Time.Calendar 
 import Data.Time.LocalTime
 import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
 import Almanakk.Application.AppContext (AppContext)
 import Almanakk.Application.Version
-import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, processLunarPhaseResult, celPhaseResultToAee, aeeToStr, getCalendarEntries, calendarEntriesToStr, AlmanacEventEntry, cellestialPhaseToStr)
+import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, celPhaseResultToAee, aeeToStr, getCalendarEntries, calendarEntriesToStr, AlmanacEventEntry, cellestialPhaseToStr)
 import Almanakk.Almanac
-import System.Environment.Blank (getArgs)
-
-
-{--
-Main module of almanakk-cli
--}
 
 -- Entry point  of almanakk-cli
 main :: IO ()
@@ -57,8 +52,6 @@ sunRiseSetTzMain lat lon tzInt = do
                 (Nothing) -> tzsystem
                 (Just tza) -> hoursToTimeZone tza
     let moonPh = MoonPhase t
-    let newmoon = new moonPh
-    let fullmoon = full moonPh
     let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
     let phse = phase moonPh
     composeResult t lat lon tz sr ss deltaRise deltaSet (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
@@ -93,5 +86,5 @@ composeResult t lat lon tz sr ss deltaRise deltaSet aee phse =
         )
 
 handler :: SomeException -> IO ()
-handler ex = putStrLn $ "Unexpected error occured.\n"
+handler _ = putStrLn $ "Unexpected error occured.\n"
 

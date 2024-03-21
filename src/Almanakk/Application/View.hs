@@ -11,11 +11,13 @@ module Almanakk.Application.View (
     , cellestialPhaseToStr
 ) where
 
+
+
 import Data.Time
 import Data.Time(utctDay)
 import Almanakk.Application.AppContext
 import Almanakk.Almanac
-import Almanakk.Calendar.Calendar (dateOfEaster, dateOfPentecost)
+import Almanakk.Calendar.Calendar (dateOfEaster)
 
 
 
@@ -43,7 +45,6 @@ instance Ord CalendarEntry where
 
 instance Eq CalendarEntry where
     x == y = (calendarEntryDay x) == (calendarEntryDay y)
-    x == y = (calendarEntryDay x) /= (calendarEntryDay y)
 
 cellestialPhaseToStr :: CellestialPhase -> String
 cellestialPhaseToStr cph = show cph
@@ -76,7 +77,7 @@ calendarEntriesToStr :: [CalendarEntry] -> String
 calendarEntriesToStr [] = ""
 calendarEntriesToStr (CalendarEntry n d:xs) = "  " ++ toBlock n ++ "  " ++ toBlock (showDay d) ++ "\n" ++ calendarEntriesToStr xs
     where showDay :: Day -> String
-          showDay d = show d
+          showDay day = show day
 
 
 aeeToStr :: [AlmanacEventEntry] -> String
@@ -99,23 +100,23 @@ processResult _ (Left err)  = getContext err
 
 processLunarPhaseResult :: TimeZone -> Maybe UTCTime -> String
 processLunarPhaseResult tz (Just value) = localDateToString (utcToLocalTime tz value)
-processLunarPhaseResult tz Nothing = "-"
+processLunarPhaseResult _ Nothing = "-"
 
 processDeltaRiseResult :: Maybe NominalDiffTime -> String
 processDeltaRiseResult Nothing = "-"
 processDeltaRiseResult (Just deltaRise) = show deltaRise
 
 localTimeToString :: LocalTime -> String
-localTimeToString (LocalTime d (TimeOfDay todHour todMin todSec)) = show todHour ++ "h" ++ show (floorToNearest todMin 5) ++ "m"
+localTimeToString (LocalTime _ (TimeOfDay h m _)) = show h ++ "h" ++ show (floorToNearest m 5) ++ "m"
 
 localDateToString :: LocalTime -> String
-localDateToString (LocalTime d (TimeOfDay todHour todMin todSec)) = 
+localDateToString (LocalTime d (TimeOfDay h m _)) = 
     -- In this publicly available version, round calculation results
     -- from the almanakk-lib library to nearest 5 minutes. 
-    gregStr ++ show todHour ++ "h" ++ show (floorToNearest todMin 5) ++ "m"
+    gregStr ++ show h ++ "h" ++ show (floorToNearest m 5) ++ "m"
     where 
         gregStr = case toGregorian d of
-            (y, m, d) -> show y ++ "-" ++ show m ++ "-" ++ show d ++ " "
+            (year, month, date) -> show year ++ "-" ++ show month ++ "-" ++ show date ++ " "
 
 -- Floor x to nearest r
 floorToNearest :: Int -> Int -> Int
