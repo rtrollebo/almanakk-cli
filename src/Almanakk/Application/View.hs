@@ -6,10 +6,11 @@ module Almanakk.Application.View (
     , AlmanacEventEntry (..)
     , celPhaseResultToAee
     , aeeToStr 
-    , getCalendarEntries
+    , getCalendarEntriesFiltered
     , calendarEntriesToStr 
     , cellestialPhaseToStr
 ) where
+
 
 
 
@@ -72,6 +73,10 @@ getCalendarEntries t = entriesAll
                 ++ [CalendarEntry "Pentecost" (addDays (7*7) easterday)] 
                 ++ [CalendarEntry "Trinity Sunday" (addDays ((7*7)+7) easterday)]
                 where easterday = calendarEntryDay $ head easterEntry
+
+getCalendarEntriesFiltered :: UTCTime  -> [CalendarEntry]
+getCalendarEntriesFiltered (UTCTime d s) = filter (\x -> (calendarEntryDay x)>d) calEntries
+    where calEntries = getCalendarEntries (UTCTime d s)
 
 calendarEntriesToStr :: [CalendarEntry] -> String
 calendarEntriesToStr [] = ""
