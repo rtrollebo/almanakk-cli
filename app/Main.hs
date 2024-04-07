@@ -13,7 +13,8 @@ import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
 import Almanakk.Application.AppContext (AppContext)
 import Almanakk.Application.Version
-import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, celPhaseResultToAee, aeeToStr, getCalendarEntriesFiltered, calendarEntriesToStr, AlmanacEventEntry, cellestialPhaseToStr)
+import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, celPhaseResultToAee, aeeToStr, cellestialPhaseToStr, AlmanacEventEntry)
+import Almanakk.Application.Calendar (calendarMainFromTime)
 import Almanakk.Almanac
 
 -- Entry point  of almanakk-cli
@@ -32,12 +33,11 @@ mainAlmanac = do
             ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2024 "
             ++ "\nUsage: \nalmanakk <latitude> <longitude> [time_zone].\n"
 
+
 calendarMain :: IO()
 calendarMain = do 
     t <- getCurrentTime
-    let calEntriesStr = calendarEntriesToStr $ sort $ getCalendarEntriesFiltered t
-    putStr "Christian holidays\n\n" -- For now, show holidays based on day of easter. Additional holiday entries to be added later. 
-    putStr calEntriesStr
+    calendarMainFromTime t
 
 sunRiseSetTzMain :: Double -> Double -> Maybe Int -> IO()
 sunRiseSetTzMain lat lon tzInt = do
