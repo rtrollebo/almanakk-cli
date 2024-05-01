@@ -25,19 +25,35 @@ mainAlmanac :: IO ()
 mainAlmanac = do 
     args <- getArgs
     case args of
-        [lat, lon] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Nothing)) handler
-        [lat, lon, tz] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Just (read tz :: Int))) handler
+        ["ephemeris", lat, lon] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Nothing)) handler
+        ["ephemeris", lat, lon, tz] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Just (read tz :: Int))) handler
+        ["phase", tz] -> catch (phaseMain  (Just (read tz :: Int))) handler
+        ["phase"] -> catch (phaseMain  Nothing) handler
         ["calendar"] -> catch (calendarMain) handler
         ["--version"] -> putStrLn $ ("v" ++ getVersion)
         _             -> putStrLn $ "almanakk v." 
             ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2024 "
-            ++ "\nUsage: \nalmanakk <latitude> <longitude> [time_zone].\n"
-
+            ++ "\nUsage:" 
+            ++ "\nalmanakk ephemeris <latitude> <longitude> [time_zone]"
+            ++ "\nalmanakk phase [time_zone]"
+            ++ "\nalmanakk calendar"
 
 calendarMain :: IO()
 calendarMain = do 
     t <- getCurrentTime
     calendarMainFromTime t
+
+phaseMain :: Maybe Int -> IO()
+phaseMain tzInt = do
+    t <- getCurrentTime
+    tzsystem <- getTimeZone t
+    let moonPh = MoonPhase t
+    let tz = case tzInt of 
+                (Nothing) -> tzsystem
+                (Just tza) -> hoursToTimeZone tza
+    let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
+    let phse = phase moonPh
+    composeResultPhase (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
 
 sunRiseSetTzMain :: Double -> Double -> Maybe Int -> IO()
 sunRiseSetTzMain lat lon tzInt = do
@@ -53,17 +69,15 @@ sunRiseSetTzMain lat lon tzInt = do
     let moonPh = MoonPhase t
     let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
     let phse = phase moonPh
-    composeResult t lat lon tz sr ss deltaRise deltaSet (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
+    composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet 
 
-composeResult :: UTCTime 
+composeResultEphemeris :: UTCTime 
     -> Double -> Double -> TimeZone 
     -> Either AppContext (Maybe UTCTime) 
     -> Either AppContext (Maybe UTCTime) 
     -> Maybe NominalDiffTime -> Maybe NominalDiffTime 
-    -> [AlmanacEventEntry]
-    -> [(String, String)]
     -> IO()
-composeResult t lat lon tz sr ss deltaRise deltaSet aee phse = 
+composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet = 
     putStr 
         (
             "\nObserver data\n" ++
@@ -76,8 +90,16 @@ composeResult t lat lon tz sr ss deltaRise deltaSet aee phse =
                 ("Sunrise", processResult tz sr),
                 ("Sunset", processResult tz ss),
                 ("Δ rise", processDeltaRiseResult deltaRise),
-                ("Δ set", processDeltaRiseResult deltaSet)]) ++
-            "\nCelestial phase data\n" ++
+                ("Δ set", processDeltaRiseResult deltaSet)])
+        )
+
+composeResultPhase :: [AlmanacEventEntry]
+    -> [(String, String)]
+    -> IO()
+composeResultPhase aee phse = 
+    putStr 
+        (
+            "\nCurrent celestial phases\n" ++
             (toStr phse) ++ 
             "\nNext celestial phase events\n" ++
             (aeeToStr aee
