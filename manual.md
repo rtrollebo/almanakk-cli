@@ -73,6 +73,13 @@ The phase cycle contains 4 events:  New, first quarter, full and last quarter. `
 
 ## Calendar Data Product
 
+### Equinox
+
+Date and time of the equinoxes:
+
+* Northward equinox, or the *March equinox* (Spring equinox in the northern hepmispher, autumn equinox in the southern hemisphere)
+* Southward equinox, or the *September equinox*.
+
 ### Christian Holidays
 
 A list of holidays in the Christian Liturgical Year. By default, upcoming holidays from current day to the end of the current year, are shown. 
@@ -137,15 +144,15 @@ Current celestial phase
     2024-5-15 13h45m      Moon                  First quarter       
     2024-5-23 15h50m      Moon                  Full
 
-Christian calendar (upcoming calendar events at 2024-05-01)
+Christian calendar (upcoming calendar events at 2024-05-14)
 
     almanakk calendar
 
-    Christian holidays
+    Christian holidays and astronomical events
 
-    Ascension of Jesus    2024-05-09          
-    Pentecost             2024-05-19          
-    Trinity Sunday        2024-05-26          
+    Pentecost                   2024-05-19                
+    Trinity Sunday              2024-05-26                
+    Equinox southward 14h40m    2024-09-22     
 
 # Reference
 

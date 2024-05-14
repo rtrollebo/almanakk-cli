@@ -8,6 +8,7 @@ module Almanakk.Application.View (
     , celPhaseResultToAee
     , aeeToStr 
     , cellestialPhaseToStr
+    , localTimeToString
 ) where
 
 import Data.Time
@@ -74,4 +75,4 @@ toBlock :: String -> String
 toBlock x
     | length x < width = x ++ replicate (width - (length x)) ' '
     | otherwise = take width x
-        where width = 20
+        where width = 26
