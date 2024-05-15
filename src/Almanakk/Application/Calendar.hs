@@ -9,8 +9,6 @@ import Almanakk.Application.View
 import Almanakk.Orbit.Equinox
 import Almanakk.Almanac
 
--- instance CalendarUnit UTCTime
---     addUTCTimeEventToCalendar :: UTCTime -> String -> [CalendarEntry] -> [CalendarEntry]
 
 data CalendarEntry = CalendarEntry {
     -- Basic calendar entry for the standard Christian Calendar and astronomical events
@@ -71,10 +69,10 @@ calendarMainFromTime t = do
     -- Compose list
     let equinoxNorthwardList = case eqnNorth of 
                         (Left ctx) -> doeList
-                        (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString (utcToLocalTime tzsystem v)))  doeList
+                        (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString $ utcToLocalTime tzsystem v))  doeList
     let calendarList = case eqnSouth of 
                         (Left ctx) -> doeList
-                        (Right v) -> addEventToCalendar v ("Equinox southward "++(localTimeToString (utcToLocalTime tzsystem v))) equinoxNorthwardList
+                        (Right v) -> addEventToCalendar v ("Equinox southward "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxNorthwardList
     let calEntriesStr = calendarEntriesToStr $ sort $ (getCalendarEntriesFiltered t calendarList)
     putStr "Christian holidays and astronomical events\n\n" -- For now, show holidays based on day of easter. Additional holiday entries to be added later. 
     putStr calEntriesStr
