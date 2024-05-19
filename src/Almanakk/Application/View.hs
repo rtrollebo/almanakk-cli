@@ -9,6 +9,7 @@ module Almanakk.Application.View (
     , aeeToStr 
     , cellestialPhaseToStr
     , localTimeToString
+    , localTimeFloor
 ) where
 
 import Data.Time
@@ -53,6 +54,10 @@ processDeltaRiseResult (Just deltaRise) = show deltaRise
 
 localTimeToString :: LocalTime -> String
 localTimeToString (LocalTime _ (TimeOfDay h m _)) = show h ++ "h" ++ show (floorToNearest m 5) ++ "m"
+
+localTimeFloor :: LocalTime -> LocalTime
+localTimeFloor (LocalTime d (TimeOfDay h m _)) = (LocalTime d (TimeOfDay h (floorToNearest m 5) 0))
+
 
 localDateToString :: LocalTime -> String
 localDateToString (LocalTime d (TimeOfDay h m _)) = 

@@ -4,18 +4,23 @@ module Almanakk.Application.Calendar (
 
 import Data.Time
 import Data.List (sort)
+import Data.Time.Calendar
 import Almanakk.Calendar.Calendar (dateOfEaster)
 import Almanakk.Application.View
 import Almanakk.Orbit.Equinox
 import Almanakk.Almanac
 
 
-data CalendarEntry = CalendarEntry {
+data CalendarEntry = 
+    CalendarEntry {
     -- Basic calendar entry for the standard Christian Calendar and astronomical events
     -- Temporary type to contain data from newly exposed functions from almanakk-lib
     -- (to be combined with AlmanacEventEntry later)
-    calendarEntryName :: String,
-    calendarEntryDay :: Day } deriving (Show)
+        calendarEntryName :: String,
+        calendarEntryDay :: Day } | 
+    CalendarEntryTime { 
+        calendarEntryName :: String, 
+        calendarEntryTime :: UTCTime} deriving (Show)
 
 
 class CalendarUnit a where
@@ -23,7 +28,7 @@ class CalendarUnit a where
 
 
 addUTCTimeEventToCalendar :: UTCTime -> String -> [CalendarEntry] -> [CalendarEntry]
-addUTCTimeEventToCalendar (UTCTime d s) name entries = entries ++ [(CalendarEntry name d)]
+addUTCTimeEventToCalendar t name entries = entries ++ [(CalendarEntryTime name t)]
 
 addDayEventToCalendar :: Day -> String -> [CalendarEntry] -> [CalendarEntry]
 addDayEventToCalendar d name entries = entries ++ [(CalendarEntry name d)]
@@ -42,10 +47,20 @@ instance Eq AlmanacEventEntry where
     x /= y = (entryTime x) /=  (entryTime y)  
 
 instance Ord CalendarEntry where
-    compare x y = compare (calendarEntryDay x) (calendarEntryDay y)
+    compare x y = compareCalendarEntries x y
 
+
+-- TODO: fix the instance of Eq, similar to compare
 instance Eq CalendarEntry where
     x == y = (calendarEntryDay x) == (calendarEntryDay y)
+    x == y = (calendarEntryTime x) == (calendarEntryTime y)
+
+compareCalendarEntries :: CalendarEntry -> CalendarEntry -> Ordering
+compareCalendarEntries (CalendarEntry _ day1) (CalendarEntry _ day2) = compare day1 day2
+compareCalendarEntries (CalendarEntryTime _ utctime1) (CalendarEntryTime _ utctime2) = compare utctime1 utctime2
+compareCalendarEntries (CalendarEntry _ day1) (CalendarEntryTime _ (UTCTime day2 _)) =  compare day1 day2
+compareCalendarEntries (CalendarEntryTime _ (UTCTime day1 _)) (CalendarEntry _ day2) = compare day1 day2
+
 
 
 calendarMainFromTime :: UTCTime -> IO()
@@ -53,6 +68,9 @@ calendarMainFromTime t = do
 
     -- Date of easter
     doeList <- getDateOfEasterList t
+
+    -- Add liturgical calendar days based on the date of easter
+    let calendarEntriesLiturg = getCalendarEntries doeList
 
     {-- 
     Equinox of the current year:
@@ -66,15 +84,15 @@ calendarMainFromTime t = do
     let eqnNorth = equinox Northward currentYear
     let eqnSouth = equinox Southward currentYear
 
-    -- Compose list
+    -- Add astronomical days
     let equinoxNorthwardList = case eqnNorth of 
                         (Left ctx) -> doeList
-                        (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString $ utcToLocalTime tzsystem v))  doeList
+                        (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString $ utcToLocalTime tzsystem v)) calendarEntriesLiturg
     let calendarList = case eqnSouth of 
                         (Left ctx) -> doeList
                         (Right v) -> addEventToCalendar v ("Equinox southward "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxNorthwardList
-    let calEntriesStr = calendarEntriesToStr $ sort $ (getCalendarEntriesFiltered t calendarList)
-    putStr "Christian holidays and astronomical events\n\n" -- For now, show holidays based on day of easter. Additional holiday entries to be added later. 
+    let calEntriesStr = calendarEntriesToStr tzsystem $ sort $ getCalendarEntriesFiltered t calendarList
+    putStr "Christian holidays and astronomical events\n\n" 
     putStr calEntriesStr
 
 getDateOfEasterList :: UTCTime -> IO [CalendarEntry]
@@ -94,12 +112,12 @@ getDateOfEaster t = easterEntry
 getCalendarEntries :: [CalendarEntry] -> [CalendarEntry]
 getCalendarEntries easterEntry   
     | (length easterEntry) == 0 = []
-    | otherwise = [CalendarEntry "Transfiguration Sunday" (addDays (-7*7) easterday)]
+    | otherwise = easterEntry
+                ++ [CalendarEntry "Transfiguration Sunday" (addDays (-7*7) easterday)]
                 ++ [CalendarEntry "Ash Wednesday" (addDays (-46) easterday)]
                 ++ [CalendarEntry "Palm Sunday" (addDays (-7) easterday)]
                 ++ [CalendarEntry "Maundy Thursday" (addDays (-3) easterday)]
                 ++ [CalendarEntry "Good Friday" (addDays (-2) easterday)]
-                ++ easterEntry
                 ++ [CalendarEntry "Divine Mercy Sunday" (addDays (7) easterday)]
                 ++ [CalendarEntry "Ascension of Jesus" (addDays (39) easterday)]
                 ++ [CalendarEntry "Pentecost" (addDays (7*7) easterday)] 
@@ -107,11 +125,19 @@ getCalendarEntries easterEntry
                 where easterday = calendarEntryDay $ head easterEntry
 
 getCalendarEntriesFiltered :: UTCTime -> [CalendarEntry] -> [CalendarEntry]
-getCalendarEntriesFiltered (UTCTime d _) calEntryInitial = filter (\x -> (calendarEntryDay x)>d) calEntries
-    where calEntries = getCalendarEntries calEntryInitial
+getCalendarEntriesFiltered t calEntryInitial = filter (\x -> (compareCalendarEntryWithUtcTime t x)) calEntryInitial
 
-calendarEntriesToStr :: [CalendarEntry] -> String
-calendarEntriesToStr [] = ""
-calendarEntriesToStr (CalendarEntry n d:xs) = "  " ++ toBlock n ++ "  " ++ toBlock (showDay d) ++ "\n" ++ calendarEntriesToStr xs
+compareCalendarEntryWithUtcTime :: UTCTime -> CalendarEntry -> Bool
+compareCalendarEntryWithUtcTime (UTCTime d s) entry =  case entry of
+                                                       (CalendarEntry _ day) -> day > d
+                                                       (CalendarEntryTime _ utctime) ->  utctime > (UTCTime d s)
+
+calendarEntriesToStr :: TimeZone -> [CalendarEntry] -> String
+calendarEntriesToStr _ [] = ""
+calendarEntriesToStr tz (CalendarEntryTime n utctime:xs) = "  " ++ toBlock (show localDay) ++ "  " ++ toBlock n ++ "  " ++ "\n" ++ calendarEntriesToStr tz xs
+    where localDay = case (utcToLocalTime tz utctime) of 
+                     (LocalTime d _) -> d
+calendarEntriesToStr tz (CalendarEntry n d:xs) = "  " ++ toBlock (showDay d) ++ "  " ++ toBlock n ++ "  " ++ "\n" ++ calendarEntriesToStr tz xs
     where showDay :: Day -> String
           showDay day = show day
+
