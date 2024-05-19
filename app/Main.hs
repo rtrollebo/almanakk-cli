@@ -30,8 +30,8 @@ mainAlmanac = do
         ["phase", tz] -> catch (phaseMain  (Just (read tz :: Int))) handler
         ["phase"] -> catch (phaseMain  Nothing) handler
         ["calendar"] -> catch (calendarMain) handler
-        ["--version"] -> putStrLn $ ("v" ++ getVersion)
-        _             -> putStrLn $ "almanakk v." 
+        ["--version"] -> putStrLn $ (getVersion)
+        _             -> putStrLn $ "almanakk " 
             ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2024 "
             ++ "\nUsage:" 
             ++ "\nalmanakk ephemeris <latitude> <longitude> [time_zone]"
