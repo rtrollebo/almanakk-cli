@@ -39,13 +39,6 @@ instance CalendarUnit UTCTime where
 instance CalendarUnit Day where
     addEventToCalendar = addDayEventToCalendar
 
-instance Ord AlmanacEventEntry where 
-    compare x y = compare (entryTime x) (entryTime y)
-
-instance Eq AlmanacEventEntry where
-    x == y = (entryTime x) ==  (entryTime y)  
-    x /= y = (entryTime x) /=  (entryTime y)  
-
 instance Ord CalendarEntry where
     compare x y = compareCalendarEntries x y
 

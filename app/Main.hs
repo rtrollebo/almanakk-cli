@@ -13,7 +13,8 @@ import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
 import Almanakk.Application.AppContext (AppContext)
 import Almanakk.Application.Version
-import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr, celPhaseResultToAee, aeeToStr, cellestialPhaseToStr, AlmanacEventEntry)
+import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr)
+import Almanakk.Application.Phase
 import Almanakk.Application.Calendar (calendarMainFromTime)
 import Almanakk.Almanac
 
