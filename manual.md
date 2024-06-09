@@ -80,6 +80,13 @@ Date and time of the equinoxes:
 * Northward equinox, or the *March equinox* (Spring equinox in the northern hepmispher, autumn equinox in the southern hemisphere)
 * Southward equinox, or the *September equinox*.
 
+### Solstice
+
+Date and time of the solstices:
+
+* Northern solstice, or the *June solstice* (Summer solstice in the northern hemisphere, winter solstice in the southern hemisphere).
+* Southern solstice, or the *December solstice*.
+
 ### Christian Holidays
 
 A list of holidays in the Christian Liturgical Year. By default, upcoming holidays from current day to the end of the current year, are shown. 
@@ -144,7 +151,7 @@ Current celestial phase
     2024-5-15 13h45m      Moon                  First quarter       
     2024-5-23 15h50m      Moon                  Full
 
-Christian calendar (upcoming calendar events at 2024-05-14)
+Christian calendar and astronomical events (upcoming calendar events at 2024-05-14)
 
     almanakk calendar
 
