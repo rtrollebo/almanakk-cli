@@ -148,11 +148,13 @@ Christian calendar (upcoming calendar events at 2024-05-14)
 
     almanakk calendar
 
-    Christian holidays and astronomical events
+    Christian holidays and astronomical events   
 
-    Pentecost                   2024-05-19                
-    Trinity Sunday              2024-05-26                
-    Equinox southward 14h40m    2024-09-22     
+    2024-05-19                  Pentecost
+    2024-05-26                  Trinity Sunday
+    2024-06-20                  Solstice Northern 22h50m    
+    2024-09-22                  Equinox southward 14h40m    
+    2024-12-21                  Solstice Southern 11h20m 
 
 # Reference
 
