@@ -8,6 +8,7 @@ import Data.Time.Calendar
 import Almanakk.Calendar.Calendar (dateOfEaster)
 import Almanakk.Application.View
 import Almanakk.Orbit.Equinox
+import Almanakk.Orbit.Solstice
 import Almanakk.Almanac
 
 
@@ -77,13 +78,27 @@ calendarMainFromTime t = do
     let eqnNorth = equinox Northward currentYear
     let eqnSouth = equinox Southward currentYear
 
+    {-- 
+    Solstice of the current year:
+    solstice signature:
+    solstice :: Solstice -> Int ->  Either AppContext UTCTime
+    -}
+    let solNorthern = solstice Northern currentYear
+    let solSouthern = solstice Southern currentYear
+
     -- Add astronomical days
     let equinoxNorthwardList = case eqnNorth of 
                         (Left ctx) -> doeList
                         (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString $ utcToLocalTime tzsystem v)) calendarEntriesLiturg
-    let calendarList = case eqnSouth of 
-                        (Left ctx) -> doeList
+    let equinoxSouthwardList = case eqnSouth of 
+                        (Left ctx) -> equinoxNorthwardList
                         (Right v) -> addEventToCalendar v ("Equinox southward "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxNorthwardList
+    let solsticeNorthernList = case solNorthern of 
+                        (Left ctx) -> equinoxSouthwardList
+                        (Right v) -> addEventToCalendar v ("Solstice northern "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxSouthwardList
+    let calendarList = case solSouthern of 
+                        (Left ctx) -> solsticeNorthernList
+                        (Right v) -> addEventToCalendar v ("Solstice southern "++(localTimeToString $ utcToLocalTime tzsystem v)) solsticeNorthernList
     let calEntriesStr = calendarEntriesToStr tzsystem $ sort $ getCalendarEntriesFiltered t calendarList
     putStr "Christian holidays and astronomical events\n\n" 
     putStr calEntriesStr
