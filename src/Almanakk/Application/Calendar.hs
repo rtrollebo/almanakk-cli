@@ -5,11 +5,11 @@ module Almanakk.Application.Calendar (
 import Data.Time
 import Data.List (sort)
 import Data.Time.Calendar
-import Almanakk.Calendar.Calendar (dateOfEaster)
+import Almanakk.Calendar (dateOfEaster)
 import Almanakk.Application.View
 import Almanakk.Orbit.Equinox
 import Almanakk.Orbit.Solstice
-import Almanakk.Almanac
+import Almanakk.Almanakk
 
 
 data CalendarEntry = 

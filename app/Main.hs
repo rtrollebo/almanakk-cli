@@ -16,7 +16,7 @@ import Almanakk.Application.Version
 import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr)
 import Almanakk.Application.Phase
 import Almanakk.Application.Calendar (calendarMainFromTime)
-import Almanakk.Almanac
+import Almanakk.Almanakk
 
 -- Entry point  of almanakk-cli
 main :: IO ()

@@ -8,7 +8,7 @@ module Almanakk.Application.Phase (
 import Data.Time
 import Data.Time(utctDay)
 import Almanakk.Application.AppContext
-import Almanakk.Almanac
+import Almanakk.Almanakk
 import Almanakk.Application.View
 
 

@@ -11,7 +11,7 @@ module Almanakk.Application.View (
 import Data.Time
 import Data.Time(utctDay)
 import Almanakk.Application.AppContext
-import Almanakk.Almanac
+import Almanakk.Almanakk
 
 
 processResult :: TimeZone -> Either AppContext (Maybe UTCTime ) -> String
