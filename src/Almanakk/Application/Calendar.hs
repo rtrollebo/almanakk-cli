@@ -142,8 +142,8 @@ compareCalendarEntryWithUtcTime (UTCTime d s) entry =  case entry of
 
 calendarEntriesToStr :: TimeZone -> [CalendarEntry] -> String
 calendarEntriesToStr _ [] = ""
-calendarEntriesToStr tz (CalendarEntryTime n utctime:xs) = "  " ++ toBlock (show localDay) ++ "  " ++ toBlock n ++ "  " ++ "\n" ++ calendarEntriesToStr tz xs
-    where localDay = case (utcToLocalTime tz utctime) of 
+calendarEntriesToStr tz (CalendarEntryTime n utctime:xs) = "  " ++ toBlock (show localTimeDay) ++ "  " ++ toBlock n ++ "  " ++ "\n" ++ calendarEntriesToStr tz xs
+    where localTimeDay = case (utcToLocalTime tz utctime) of 
                      (LocalTime d _) -> d
 calendarEntriesToStr tz (CalendarEntry n d:xs) = "  " ++ toBlock (showDay d) ++ "  " ++ toBlock n ++ "  " ++ "\n" ++ calendarEntriesToStr tz xs
     where showDay :: Day -> String
