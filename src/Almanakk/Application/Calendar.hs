@@ -10,6 +10,7 @@ import Almanakk.Application.View
 import Almanakk.Orbit.Equinox
 import Almanakk.Orbit.Solstice
 import Almanakk.Almanakk
+import Almanakk.Application.AppContext
 
 
 data CalendarEntry = 
@@ -55,7 +56,10 @@ compareCalendarEntries (CalendarEntryTime _ utctime1) (CalendarEntryTime _ utcti
 compareCalendarEntries (CalendarEntry _ day1) (CalendarEntryTime _ (UTCTime day2 _)) =  compare day1 day2
 compareCalendarEntries (CalendarEntryTime _ (UTCTime day1 _)) (CalendarEntry _ day2) = compare day1 day2
 
-
+data CalendarCollection = CalendarCollection {
+    calendarCollection :: [CalendarEntry],
+    calendarEvent :: (Either AppContext UTCTime, String),
+    ccTimeZone :: TimeZone}
 
 calendarMainFromTime :: UTCTime -> IO()
 calendarMainFromTime t = do 
@@ -66,42 +70,48 @@ calendarMainFromTime t = do
     -- Add liturgical calendar days based on the date of easter
     let calendarEntriesLiturg = getCalendarEntries doeList
 
-    {-- 
-    Equinox of the current year:
-    equinox signature:
-    equinox :: Equinox -> Int ->  Either AppContext UTCTime
-    -}
+    -- System time zone
     tzsystem <- getTimeZone t
+
+    -- Current year
     let currentYear = case t of 
                       (UTCTime d _) -> case (toGregorian d) of 
                                        (year, _, _) -> fromIntegral year
-    let eqnNorth = equinox Northward currentYear
-    let eqnSouth = equinox Southward currentYear
-
-    {-- 
-    Solstice of the current year:
-    solstice signature:
-    solstice :: Solstice -> Int ->  Either AppContext UTCTime
-    -}
-    let solNorthern = solstice Northern currentYear
-    let solSouthern = solstice Southern currentYear
-
+                                       
     -- Add astronomical days
-    let equinoxNorthwardList = case eqnNorth of 
-                        (Left ctx) -> doeList
-                        (Right v) -> addEventToCalendar v ("Equinox northward "++(localTimeToString $ utcToLocalTime tzsystem v)) calendarEntriesLiturg
-    let equinoxSouthwardList = case eqnSouth of 
-                        (Left ctx) -> equinoxNorthwardList
-                        (Right v) -> addEventToCalendar v ("Equinox southward "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxNorthwardList
-    let solsticeNorthernList = case solNorthern of 
-                        (Left ctx) -> equinoxSouthwardList
-                        (Right v) -> addEventToCalendar v ("Solstice northern "++(localTimeToString $ utcToLocalTime tzsystem v)) equinoxSouthwardList
-    let calendarList = case solSouthern of 
-                        (Left ctx) -> solsticeNorthernList
-                        (Right v) -> addEventToCalendar v ("Solstice southern "++(localTimeToString $ utcToLocalTime tzsystem v)) solsticeNorthernList
-    let calEntriesStr = calendarEntriesToStr tzsystem $ sort $ getCalendarEntriesFiltered t calendarList
+    let collections = [
+            {-- 
+            Equinox of the current year:
+            equinox signature:
+            equinox :: Equinox -> Int ->  Either AppContext UTCTime
+            -}
+            CalendarCollection [] (equinox Northward currentYear, "Equinox northward ") tzsystem,
+            CalendarCollection [] (equinox Southward currentYear, "Equinox southward ") tzsystem, 
+            {-- 
+            Solstice of the current year:
+            solstice signature:
+            solstice :: Solstice -> Int ->  Either AppContext UTCTime
+            -}
+            CalendarCollection [] (solstice Northern currentYear, "Solstice northern ") tzsystem, 
+            CalendarCollection [] (solstice Southern currentYear, "Solstice southern ") tzsystem]
+
+    let collectionResult = foldl 
+            joinCalendarCollection 
+            (CalendarCollection (getCalendarEntries doeList) (Left (addInfoToContext "_" Nothing), "") tzsystem) 
+            collections
+
+    let calEntriesStr = calendarEntriesToStr tzsystem $ sort $ getCalendarEntriesFiltered t (calendarCollection collectionResult)
     putStr "Christian holidays and astronomical events\n\n" 
     putStr calEntriesStr
+
+joinCalendarCollection :: CalendarCollection -> CalendarCollection -> CalendarCollection
+joinCalendarCollection cc1 cc2 = CalendarCollection value (ce, descr) (ccTimeZone cc2)
+    where value = case ce of
+                (Left ctx) -> calendarCollection cc2
+                (Right v) -> addEventToCalendar v (descr++(localTimeToString $ utcToLocalTime tzsystem v)) (calendarCollection cc1)
+          ce = fst (calendarEvent cc2)
+          descr = snd (calendarEvent cc2)
+          tzsystem = ccTimeZone cc2
 
 getDateOfEasterList :: UTCTime -> IO [CalendarEntry]
 getDateOfEasterList t = return (getDateOfEaster t)
