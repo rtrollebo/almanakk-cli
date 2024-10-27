@@ -1,4 +1,4 @@
 module Almanakk.Application.Version (getVersion) where
 
 getVersion :: String
-getVersion = "v1.0.6"
+getVersion = "v2.0.0"

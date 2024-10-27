@@ -9,6 +9,7 @@ import Control.Exception
 import Data.List (sort)
 import Data.Time.Clock
 import Data.Time.LocalTime
+import Options.Applicative
 import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
 import Almanakk.Application.AppContext (AppContext)
@@ -19,26 +20,19 @@ import Almanakk.Application.Calendar (calendarMainFromTime)
 import Almanakk.Application.Calendar.Internal
 import Almanakk.Almanakk
 
--- Entry point  of almanakk-cli
-main :: IO ()
-main = mainAlmanac
 
-mainAlmanac :: IO ()
-mainAlmanac = do 
-    args <- getArgs
-    case args of
-        ["ephemeris", lat, lon] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Nothing)) handler
-        ["ephemeris", lat, lon, tz] -> catch (sunRiseSetTzMain (read lat :: Double) (read lon :: Double) (Just (read tz :: Int))) handler
-        ["phase", tz] -> catch (phaseMain  (Just (read tz :: Int))) handler
-        ["phase"] -> catch (phaseMain  Nothing) handler
-        ["calendar"] -> catch (calendarMain) handler
-        ["--version"] -> putStrLn $ (getVersion)
-        _             -> putStrLn $ "almanakk " 
-            ++ getVersion ++ "\nrtrollebo@gmail.com (C) 2024 "
-            ++ "\nUsage:" 
-            ++ "\nalmanakk ephemeris <latitude> <longitude> [time_zone]"
-            ++ "\nalmanakk phase [time_zone]"
-            ++ "\nalmanakk calendar"
+data AlmanakkArgs = EphArg Double Double String | PhaseArg String | CalendarArg String
+
+main :: IO ()
+main = do
+    p <- execParser (info (parser <**> helper <**> (simpleVersioner getVersion)) ( fullDesc <> progDesc "Almanakk CLI - astronomical calendar and ephemeris.\nrtrollebo@gmail.com (C) 2024 " <> header "Almanakk CLI" ) )
+    processParser p
+
+processParser :: AlmanakkArgs -> IO ()
+processParser (EphArg lat lon tz) = catch (sunRiseSetTzMain lat lon (timezoneFromDefaultValue tz)) handler
+processParser (PhaseArg tz) = catch (phaseMain  (timezoneFromDefaultValue tz)) handler
+processParser (CalendarArg tz) = catch (calendarMain) handler
+processParser _ = return ()
 
 calendarMain :: IO()
 calendarMain = do 
@@ -72,6 +66,29 @@ sunRiseSetTzMain lat lon tzInt = do
     let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
     let phse = phase moonPh
     composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet 
+
+parserEphemeris :: Parser AlmanakkArgs
+parserEphemeris = EphArg
+    <$> argument auto (metavar "lat" <> help "latitude") 
+    <*> argument auto (metavar "lon" <> help "latitude")
+    <*> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+
+parserPhase :: Parser AlmanakkArgs
+parserPhase = PhaseArg
+    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+
+parserCalendar :: Parser AlmanakkArgs
+parserCalendar = CalendarArg
+    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+
+addInfo :: Parser a -> String -> ParserInfo a
+addInfo p d = info (helper <*> p) $ progDesc d
+
+parser :: Parser AlmanakkArgs
+parser = subparser
+       ( command "ephemeris" (addInfo parserEphemeris  "Calculate the ephemeris at the specified latitude and longitude." )
+      <> command "phase" (addInfo parserPhase  "Calculate the lunar phase. ")
+      <> command "calendar" (addInfo parserCalendar  "Calculate the astronomical calendar. "))
 
 composeResultEphemeris :: UTCTime 
     -> Double -> Double -> TimeZone 
@@ -107,6 +124,11 @@ composeResultPhase aee phse =
             (aeeToStr aee
             )
         )
+
+timezoneFromDefaultValue :: String -> Maybe Int
+timezoneFromDefaultValue tz
+    | tz == "0" = Nothing
+    | otherwise = Just (read tz :: Int)
 
 handler :: SomeException -> IO ()
 handler _ = putStrLn $ "Unexpected error occured.\n"
