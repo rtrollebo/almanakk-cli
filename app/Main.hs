@@ -9,6 +9,7 @@ import Control.Exception
 import Data.List (sort)
 import Data.Time.Clock
 import Data.Time.LocalTime
+import Text.Read
 import Options.Applicative
 import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
@@ -29,8 +30,8 @@ main = do
     processParser p
 
 processParser :: AlmanakkArgs -> IO ()
-processParser (EphArg lat lon tz) = catch (sunRiseSetTzMain lat lon (timezoneFromDefaultValue tz)) handler
-processParser (PhaseArg tz) = catch (phaseMain  (timezoneFromDefaultValue tz)) handler
+processParser (EphArg lat lon tz) = catch (sunRiseSetTzMain lat lon (readMaybe tz)) handler
+processParser (PhaseArg tz) = catch (phaseMain  (readMaybe tz)) handler
 processParser (CalendarArg tz) = catch (calendarMain) handler
 processParser _ = return ()
 
@@ -71,15 +72,15 @@ parserEphemeris :: Parser AlmanakkArgs
 parserEphemeris = EphArg
     <$> argument auto (metavar "lat" <> help "latitude") 
     <*> argument auto (metavar "lon" <> help "latitude")
-    <*> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+    <*> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "default")
 
 parserPhase :: Parser AlmanakkArgs
 parserPhase = PhaseArg
-    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "default")
 
 parserCalendar :: Parser AlmanakkArgs
 parserCalendar = CalendarArg
-    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "0")
+    <$> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "default")
 
 addInfo :: Parser a -> String -> ParserInfo a
 addInfo p d = info (helper <*> p) $ progDesc d
@@ -124,11 +125,6 @@ composeResultPhase aee phse =
             (aeeToStr aee
             )
         )
-
-timezoneFromDefaultValue :: String -> Maybe Int
-timezoneFromDefaultValue tz
-    | tz == "0" = Nothing
-    | otherwise = Just (read tz :: Int)
 
 handler :: SomeException -> IO ()
 handler _ = putStrLn $ "Unexpected error occured.\n"
