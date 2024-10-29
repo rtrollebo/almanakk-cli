@@ -14,7 +14,16 @@ Ephemeris of astronomical bodies
 
 ## signature
 
-`almanakk ephemeris <lat> <lon> [timezone]`
+    almanakk-cli ephemeris -h
+    Usage: almanakk-cli ephemeris lat lon [--timezone timezone]
+
+    Calculate the ephemeris at the specified latitude and longitude.
+
+    Available options:
+      -h,--help                Show this help text
+      lat                      latitude
+      lon                      latitude
+      --timezone timezone      Specify the timezone (default: "default")
 
 ## Input Parameters
 
@@ -43,7 +52,14 @@ The current date (and timezone if not provided) is determined from the system cl
 
 ## signature
 
-`almanakk phase [timezone]`
+    almanakk-cli phase -h
+    Usage: almanakk-cli phase [--timezone timezone]
+
+      Calculate the lunar phase.
+
+    Available options:
+      -h,--help                Show this help text
+      --timezone timezone      Specify the timezone (default: "default")
 
 ## Input Parameters
 
@@ -69,7 +85,14 @@ The phase cycle contains 4 events:  New, first quarter, full and last quarter. `
 
 ## Signature
 
-`almanakk calendar`
+    almanakk-cli calendar -h
+    Usage: almanakk-cli calendar [--timezone timezone]
+
+      Calculate the astronomical calendar.
+
+    Available options:
+      -h,--help                Show this help text
+      --timezone timezone      Specify the timezone (default: "default")
 
 ## Calendar Data Product
 
@@ -125,7 +148,7 @@ Sunrise and sunset for Oslo, Norway (lat 59.9 and lon. 10.75)
 
 Sunrise and sunset for  Lima, Peru (lat -12.05 and lon -77.03), with specified time zone. 
 
-    almanakk-cli ephemeris -12.05 -77.03 -5
+    almanakk-cli ephemeris -12.05 -77.03 --timezone=5
         
     Observer data
     Date                  2024-5-1            
