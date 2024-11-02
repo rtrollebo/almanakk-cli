@@ -71,7 +71,7 @@ sunRiseSetTzMain lat lon tzInt = do
 parserEphemeris :: Parser AlmanakkArgs
 parserEphemeris = EphArg
     <$> argument auto (metavar "lat" <> help "latitude") 
-    <*> argument auto (metavar "lon" <> help "latitude")
+    <*> argument auto (metavar "lon" <> help "longitude")
     <*> strOption (long "timezone" <> metavar "timezone" <> help "Specify the timezone" <> showDefault <> value "default")
 
 parserPhase :: Parser AlmanakkArgs
