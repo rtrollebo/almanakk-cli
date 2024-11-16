@@ -117,62 +117,65 @@ A list of holidays in the Christian Liturgical Year. By default, upcoming holida
 
 # Examples
 
+Ephemeris examples for three geographical locations, on 2024-11-16
+
 Sunrise and sunset for London, UK (lat. 51.5 and lon. 0.1)
 
     almanakk-cli ephemeris 51.5 0.1
 
     Observer data
-    Time zone             CEST                
-    Location              lat 51.5 lon 0.1    
+      Date                        2024-11-16                
+      Time zone                   CET                       
+      Location                    lat 51.5 lon 0.1          
 
     Solar celestial rising and setting
-    Sunrise               6h30m               
-    Sunset                21h20m              
-    Δ rise                -111.5s             
-    Δ set                 98s 
+      Sunrise                     8h20m                     
+      Sunset                      17h5m                     
+      Δ rise                      101.5s                    
+      Δ set                       -77.5s  
 
 Sunrise and sunset for Oslo, Norway (lat 59.9 and lon. 10.75)
 
-    ./almanakk-cli ephemeris 59.9 10.75
+    almanakk-cli ephemeris 59.9 10.75
 
     Observer data
-    Date                  2024-5-1            
-    Time zone             CEST                
-    Location              lat 59.9 lon 10.75  
+      Date                        2024-11-16                
+      Time zone                   CET                       
+      Location                    lat 59.9 lon 10.75        
 
     Solar celestial rising and setting
-    Sunrise               5h10m               
-    Sunset                21h15m              
-    Δ rise                -161.5s             
-    Δ set                 148s  
+      Sunrise                     8h15m                     
+      Sunset                      15h40m                    
+      Δ rise                      148.5s                    
+      Δ set                       -124s 
 
-Sunrise and sunset for  Lima, Peru (lat -12.05 and lon -77.03), with specified time zone. 
+Sunrise and sunset for  Lima, Peru (lat -12.05 and lon -77.03), with specified time zone. (for positional command line arguments in `ephemeris`, add a leading white space to prevent almanakk from interpreting it as an option.)
 
-    almanakk-cli ephemeris -12.05 -77.03 --timezone=5
+    almanakk-cli ephemeris " -12.05" " -77.03" --timezone=-5
         
     Observer data
-    Date                  2024-5-1            
-    Time zone             -0500               
-    Location              lat -12.05 lon -77.0
+      Date                        2024-11-16                
+      Time zone                   -0500                     
+      Location                    lat -12.05 lon -77.03     
 
     Solar celestial rising and setting
-    Sunrise               6h15m               
-    Sunset                17h55m              
-    Δ rise                9s                  
-    Δ set                 -22.5s   
+      Sunrise                     5h30m                     
+      Sunset                      18h10m                    
+      Δ rise                      -3s                       
+      Δ set                       26.5s    
 
-Current celestial phase
+Current celestial phase, on 2024-11-16
 
     almanakk-cli phase
 
-    Celestial phase data
-    Lunar phase           Waning Gibbous      
+    Current celestial phases
+      Lunar phase                 Waning Gibbous            
 
     Next celestial phase events
-    2024-5-1 13h25m       Moon                  Last quarter        
-    2024-5-8 5h20m        Moon                  New                 
-    2024-5-15 13h45m      Moon                  First quarter       
-    2024-5-23 15h50m      Moon                  Full
+      2024-11-23 2h25m            Moon                        Last quarter              
+      2024-12-1 7h20m             Moon                        New                       
+      2024-12-8 16h25m            Moon                        First quarter             
+      2024-12-15 10h0m            Moon                        Full 
 
 Christian calendar and astronomical events (upcoming calendar events at 2024-05-14)
 
