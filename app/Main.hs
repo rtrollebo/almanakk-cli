@@ -11,14 +11,12 @@ import Data.Time.Clock
 import Data.Time.LocalTime
 import Text.Read
 import Options.Applicative
-import Almanakk.Ephemeris.Sun (sunRisingSetting, sunRisingSettingDailyDelta)
 import Almanakk.Phase.Moon
-import Almanakk.Application.AppContext (AppContext)
 import Almanakk.Application.Version
-import Almanakk.Application.View (processResult, processDeltaRiseResult, toStr)
+import Almanakk.Application.View 
+import Almanakk.Application.Ephemeris
 import Almanakk.Application.Phase
 import Almanakk.Application.Calendar (calendarMainFromTime)
-import Almanakk.Application.Calendar.Internal
 import Almanakk.Almanakk
 
 
@@ -30,7 +28,7 @@ main = do
     processParser p
 
 processParser :: AlmanakkArgs -> IO ()
-processParser (EphArg lat lon tz) = catch (sunRiseSetTzMain lat lon (readMaybe tz)) handler
+processParser (EphArg lat lon tz) = catch (ephemerisMain lat lon (readMaybe tz)) handler
 processParser (PhaseArg tz) = catch (phaseMain  (readMaybe tz)) handler
 processParser (CalendarArg tz) = catch (calendarMain) handler
 processParser _ = return ()
@@ -52,21 +50,10 @@ phaseMain tzInt = do
     let phse = phase moonPh
     composeResultPhase (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
 
-sunRiseSetTzMain :: Double -> Double -> Maybe Int -> IO()
-sunRiseSetTzMain lat lon tzInt = do
+ephemerisMain :: Double -> Double -> Maybe Int -> IO()
+ephemerisMain lat lon tzInt = do
     t <- getCurrentTime
-    tzsystem <- getTimeZone t
-    let sr = sunRisingSetting t Rising lon lat
-    let ss = sunRisingSetting t Setting lon lat
-    let deltaRise = sunRisingSettingDailyDelta t lon lat Rising
-    let deltaSet = sunRisingSettingDailyDelta t lon lat Setting 
-    let tz = case tzInt of 
-                (Nothing) -> tzsystem
-                (Just tza) -> hoursToTimeZone tza
-    let moonPh = MoonPhase t
-    let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
-    let phse = phase moonPh
-    composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet 
+    sunRiseSetTzMain t lat lon tzInt
 
 parserEphemeris :: Parser AlmanakkArgs
 parserEphemeris = EphArg
@@ -90,28 +77,6 @@ parser = subparser
        ( command "ephemeris" (addInfo parserEphemeris  "Calculate the ephemeris at the specified latitude and longitude." )
       <> command "phase" (addInfo parserPhase  "Calculate the lunar phase. ")
       <> command "calendar" (addInfo parserCalendar  "Calculate the astronomical calendar. "))
-
-composeResultEphemeris :: UTCTime 
-    -> Double -> Double -> TimeZone 
-    -> Either AppContext (Maybe UTCTime) 
-    -> Either AppContext (Maybe UTCTime) 
-    -> Maybe NominalDiffTime -> Maybe NominalDiffTime 
-    -> IO()
-composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet = 
-    putStr 
-        (
-            "\nObserver data\n" ++
-            (toStr [
-                ("Date", utcTimeToDayStr t), 
-                ("Time zone", show tz),
-                ("Location", "lat " ++ show lat ++ " lon " ++ show lon)]) ++
-            "\nSolar celestial rising and setting\n" ++
-            (toStr [
-                ("Sunrise", processResult tz sr),
-                ("Sunset", processResult tz ss),
-                ("Δ rise", processDeltaRiseResult deltaRise),
-                ("Δ set", processDeltaRiseResult deltaSet)])
-        )
 
 composeResultPhase :: [AlmanacEventEntry]
     -> [(String, String)]

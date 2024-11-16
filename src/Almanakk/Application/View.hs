@@ -1,7 +1,5 @@
 module Almanakk.Application.View (
-    processDeltaRiseResult
-    , processResult
-    , toStr
+    toStr
     , toBlock
     , localTimeToString
     , localDateToString
@@ -13,15 +11,6 @@ import Data.Time(utctDay)
 import Almanakk.Application.AppContext
 import Almanakk.Almanakk
 
-
-processResult :: TimeZone -> Either AppContext (Maybe UTCTime ) -> String
-processResult tz (Right (Just value)) = localTimeToString (utcToLocalTime tz value)
-processResult _ (Right Nothing) = "-" -- Does not rise or set
-processResult _ (Left err)  = getContext err
-
-processDeltaRiseResult :: Maybe NominalDiffTime -> String
-processDeltaRiseResult Nothing = "-"
-processDeltaRiseResult (Just deltaRise) = show deltaRise
 
 localTimeToString :: LocalTime -> String
 localTimeToString (LocalTime _ (TimeOfDay h m _)) = show h ++ "h" ++ show (floorToNearest m 5) ++ "m"
