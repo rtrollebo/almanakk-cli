@@ -5,7 +5,7 @@
 
 <br/>
 <p align="center">
-  <img src="assets/almanakk.svg" alt="Sublime's custom image"/>
+  <img src="assets/almanakk.svg" alt="almanakk log"/>
 </p>
 
 This is the almanakk command line program, based on the almanakk-lib library. See [doc](doc/index.html) for library API. 
