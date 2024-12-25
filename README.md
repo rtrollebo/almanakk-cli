@@ -3,6 +3,7 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/rtrollebo/almanakk-cli)
 ![GitHub last commit](https://img.shields.io/github/last-commit/rtrollebo/almanakk-cli)
 
+<img align="center" src="assets/almanakk.svg">
 
 This is the almanakk command line program, based on the almanakk-lib library. See [doc](doc/index.html) for library API. 
 
