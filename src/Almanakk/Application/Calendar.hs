@@ -11,7 +11,8 @@ import Almanakk.Orbit.Equinox
 import Almanakk.Orbit.Solstice
 import Almanakk.Almanakk
 import Almanakk.Application.AppContext
-
+import Almanakk.Orbit.Apsis
+import Almanakk.CellestialSystem 
 
 data CalendarEntry = 
     CalendarEntry {
@@ -68,15 +69,12 @@ calendarMainFromTime t = do
     doeList <- getDateOfEasterList t
 
     -- Add liturgical calendar days based on the date of easter
-    let calendarEntriesLiturg = getCalendarEntries doeList
 
     -- System time zone
     tzsystem <- getTimeZone t
 
     -- Current year
-    let currentYear = case t of 
-                      (UTCTime d _) -> case (toGregorian d) of 
-                                       (year, _, _) -> fromIntegral year
+    let cy = fromIntegral $ currentYear t
                                        
     -- Add astronomical days
     let collections = [
@@ -85,15 +83,34 @@ calendarMainFromTime t = do
             equinox signature:
             equinox :: Equinox -> Int ->  Either AppContext UTCTime
             -}
-            CalendarCollection [] (equinox Northward currentYear, "Equinox northward ") tzsystem,
-            CalendarCollection [] (equinox Southward currentYear, "Equinox southward ") tzsystem, 
+            CalendarCollection [] (equinox Northward cy, "Equinox northward ") tzsystem,
+            CalendarCollection [] (equinox Southward cy, "Equinox southward ") tzsystem, 
             {-- 
             Solstice of the current year:
             solstice signature:
             solstice :: Solstice -> Int ->  Either AppContext UTCTime
             -}
-            CalendarCollection [] (solstice Northern currentYear, "Solstice northern ") tzsystem, 
-            CalendarCollection [] (solstice Southern currentYear, "Solstice southern ") tzsystem]
+            CalendarCollection [] (solstice Northern cy, "Solstice northern ") tzsystem, 
+            CalendarCollection [] (solstice Southern cy, "Solstice southern ") tzsystem, 
+            
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Mercury) t, "Perihelion, Mercury ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Venus) t, "Perihelion, Venus ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Earth) t, "Perihelion, Earth ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Mars) t, "Perihelion, Mars ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Jupiter) t, "Perihelion, Jupiter ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Saturn) t, "Perihelion, Saturn ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Uranus) t, "Perihelion, Uranus ") tzsystem,
+            CalendarCollection [] (perihelion (CelestialBodySolarSystem Neptune) t, "Perihelion, Neptune ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Mercury) t, "Aphelion, Mercury ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Venus) t, "Aphelion, Venus ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Earth) t, "Aphelion, Earth ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Mars) t, "Aphelion, Mars ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Jupiter) t, "Aphelion, Jupiter ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Saturn) t, "Aphelion, Saturn ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Uranus) t, "Aphelion, Uranus ") tzsystem,
+            CalendarCollection [] (aphelion (CelestialBodySolarSystem Neptune) t, "Aphelion, Neptune ") tzsystem]
+
+
 
     let collectionResult = foldl 
             joinCalendarCollection 
@@ -148,7 +165,7 @@ getCalendarEntriesFiltered t calEntryInitial = filter (\x -> (compareCalendarEnt
 compareCalendarEntryWithUtcTime :: UTCTime -> CalendarEntry -> Bool
 compareCalendarEntryWithUtcTime (UTCTime d s) entry =  case entry of
                                                        (CalendarEntry _ day) -> day > d
-                                                       (CalendarEntryTime _ utctime) ->  utctime > (UTCTime d s)
+                                                       (CalendarEntryTime _ utctime) ->  (utctime > (UTCTime d s)) && ((utctime < (UTCTime (fromGregorian (currentYear (UTCTime d s)) 12 31) (secondsToDiffTime 0)))) 
 
 calendarEntriesToStr :: TimeZone -> [CalendarEntry] -> String
 calendarEntriesToStr _ [] = ""
@@ -159,3 +176,7 @@ calendarEntriesToStr tz (CalendarEntry n d:xs) = "  " ++ toBlock (showDay d) ++ 
     where showDay :: Day -> String
           showDay day = show day
 
+currentYear :: UTCTime -> Integer
+currentYear t = case t of 
+                (UTCTime d _) -> case (toGregorian d) of 
+                                 (year, _, _) -> fromIntegral year

@@ -10,11 +10,12 @@ import Data.Time(utctDay)
 import Almanakk.Application.AppContext
 import Almanakk.Almanakk
 import Almanakk.Application.View
+import Almanakk.CellestialSystem 
 
 
 data AlmanacEventEntry = AlmanacEventEntry { 
     entryTime :: LocalTime,
-    cellestialObject :: CelestialObject,
+    cellestialObject :: CelestialBody,
     cellestialPhaseEvent :: CellestialPhaseEvent } deriving (Show) 
 
 instance Ord AlmanacEventEntry where 
@@ -24,10 +25,11 @@ instance Eq AlmanacEventEntry where
     x == y = (entryTime x) ==  (entryTime y)  
     x /= y = (entryTime x) /=  (entryTime y)  
 
+
 celPhaseResultToAee :: TimeZone -> [(CellestialPhaseEvent, UTCTime)] -> [AlmanacEventEntry]
 celPhaseResultToAee _ [] = []
 celPhaseResultToAee tz (x:xs) = case x of
-    (cpe, eventTime) -> [AlmanacEventEntry (utcToLocalTime tz eventTime) Moon cpe] ++ celPhaseResultToAee tz xs
+    (cpe, eventTime) -> [AlmanacEventEntry (utcToLocalTime tz eventTime) (CelestialBody SubPlanet "Moon") cpe] ++ celPhaseResultToAee tz xs
 
 cellestialPhaseToStr :: CellestialPhase -> String
 cellestialPhaseToStr cph = show cph

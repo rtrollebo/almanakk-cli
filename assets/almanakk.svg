@@ -1,13 +1,29 @@
 <?xml version="1.0"?>
-<svg width="421" height="123" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+<svg width="200" height="80" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
  <g class="layer" display="inline">
   <title>almanakk-layer</title>
-  <line fill="none" id="svg_2" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="1.5" y2="1.5"/>
-  <line fill="none" id="svg_3" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="6.5" y2="6.5"/>
-  <line fill="none" id="svg_4" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="11.5" y2="11.5"/>
-  <text fill="#000000" font-family="Helvetica" font-size="24" font-weight="bold" id="svg_5" stroke="#008910" stroke-width="0" text-anchor="middle" x="210.5" xml:space="preserve" y="40.0">ALMANAKK</text>
-  <line fill="none" id="svg_6" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="50.0" y2="50.0"/>
-  <line fill="none" id="svg_7" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="55.0" y2="55.0"/>
-  <line fill="none" id="svg_8" stroke="#008910" stroke-width="2" x1="1.5" x2="419.5" y1="60.0" y2="60.0"/>
+  <line fill="none" id="svg_2" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="1.5" y2="1.5"/>
+  <line fill="none" id="svg_3" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="6.5" y2="6.5"/>
+  <line fill="none" id="svg_4" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="11.5" y2="11.5"/>
+  <text class="text" x="105.5" xml:space="preserve" y="40.0" letter-spacing="8">ALMANAKK</text>
+  <line fill="none" id="svg_6" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="50.0" y2="50.0"/>
+  <line fill="none" id="svg_7" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="55.0" y2="55.0"/>
+  <line fill="none" id="svg_8" stroke="#008910" stroke-width="2" x1="1.5" x2="201.5" y1="60.0" y2="60.0"/>
  </g>
+ <style>
+ 
+    .text {
+    font-size: 24px;
+    font-family: Helvetica;
+    font-weight: bold;
+    stroke:rgb(255, 255, 255);
+    stroke-width: 0;
+    text-anchor: middle;
+    stroke-width: 1px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    }
+    
+
+ </style>
 </svg>
