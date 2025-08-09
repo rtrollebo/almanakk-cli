@@ -1,5 +1,5 @@
 name:                almanakk-cli
-version:             2.0.1
+version:             2.0.2
 github:              "rtrollebo/almanakk-cli"
 license:             BSD3
 author:              "Robert Trollebø"
@@ -25,7 +25,7 @@ dependencies:
 - scientific
 - containers >= 0.6.2.1
 - optparse-applicative >= 0.17.1.0
-- almanakk-lib == 1.1.5
+- almanakk-lib == 1.1.6
 
 
 ghc-options:
