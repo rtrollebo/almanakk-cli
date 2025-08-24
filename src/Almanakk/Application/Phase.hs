@@ -1,42 +1,27 @@
 module Almanakk.Application.Phase (
     celPhaseResultToAee
     , cellestialPhaseToStr
-    , AlmanacEventEntry (..)
-    , aeeToStr 
+    , aeeToStr
 ) where
 
 import Data.Time
 import Data.Time(utctDay)
-import Almanakk.Application.AppContext
-import Almanakk.Almanakk
 import Almanakk.Application.View
-import Almanakk.CellestialSystem 
+import Almanakk.Application.Phase.Internal 
 
 
-data AlmanacEventEntry = AlmanacEventEntry { 
-    entryTime :: LocalTime,
-    cellestialObject :: CelestialBody,
-    cellestialPhaseEvent :: CellestialPhaseEvent } deriving (Show) 
-
-instance Ord AlmanacEventEntry where 
-    compare x y = compare (entryTime x) (entryTime y)
-
-instance Eq AlmanacEventEntry where
-    x == y = (entryTime x) ==  (entryTime y)  
-    x /= y = (entryTime x) /=  (entryTime y)  
-
-
-celPhaseResultToAee :: TimeZone -> [(CellestialPhaseEvent, UTCTime)] -> [AlmanacEventEntry]
-celPhaseResultToAee _ [] = []
+celPhaseResultToAee :: TimeZone -> [(LunarPhaseEvent, UTCTime)] -> [AlmanakkEventEntry] 
+celPhaseResultToAee _ [] = [] 
 celPhaseResultToAee tz (x:xs) = case x of
-    (cpe, eventTime) -> [AlmanacEventEntry (utcToLocalTime tz eventTime) (CelestialBody SubPlanet "Moon") cpe] ++ celPhaseResultToAee tz xs
+    (cpe, eventTime) -> [AlmanakkEventEntry (utcToLocalTime tz eventTime) "Moon" cpe] ++ celPhaseResultToAee tz xs
 
-cellestialPhaseToStr :: CellestialPhase -> String
+cellestialPhaseToStr :: LunarPhase -> String
 cellestialPhaseToStr cph = show cph
 
-aeeToStr :: [AlmanacEventEntry] -> String
+
+aeeToStr :: [AlmanakkEventEntry] -> String
 aeeToStr [] = ""
-aeeToStr (AlmanacEventEntry lt co cpe:xs) = 
+aeeToStr (AlmanakkEventEntry lt co cpe:xs) = 
     "  " ++ toBlock (localDateToString lt) ++ 
-    "  " ++ toBlock (show co) ++ 
+    "  " ++ toBlock co ++ 
     "  " ++ toBlock (show cpe) ++ "\n" ++ (aeeToStr xs )

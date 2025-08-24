@@ -4,3 +4,7 @@ resolver:
 
 packages:
 - .
+
+extra-deps:
+- archive: ./lib/almanakk-lib-1.1.6.tar.gz
+

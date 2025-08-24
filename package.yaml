@@ -1,5 +1,5 @@
 name:                almanakk-cli
-version:             2.0.2
+version:             2.0.3
 github:              "rtrollebo/almanakk-cli"
 license:             BSD3
 author:              "Robert Trollebø"
@@ -19,14 +19,24 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/rtrollebo/almanakk-cli#readme>
 
+flags:
+  use-external-lib:
+    manual: true
+    default: false
+
+
 dependencies:
 - base >= 4.7 && < 5
 - time
 - scientific
 - containers >= 0.6.2.1
 - optparse-applicative >= 0.17.1.0
-- almanakk-lib == 1.1.6
 
+when:
+  - condition: flag(use-external-lib)
+    dependencies:
+      - almanakk-lib == 1.1.6
+    cpp-options: -DUSE_EXTERNAL
 
 ghc-options:
 - -Wall
@@ -39,8 +49,27 @@ ghc-options:
 - -Wpartial-fields
 - -Wredundant-constraints
 
+
 library:
   source-dirs: src
+  exposed-modules:
+    - Almanakk.Application.Calendar
+    - Almanakk.Application.Ephemeris
+    - Almanakk.Application.External
+    - Almanakk.Application.Phase
+    - Almanakk.Application.Version
+    - Almanakk.Application.View
+    - Almanakk.Application.Calendar.Internal
+    - Almanakk.Application.Phase.Internal
+  other-modules:
+    - Almanakk.Application.External.Mock   
+  when:
+    - condition: flag(use-external-lib)
+      other-modules:
+        - Almanakk.Application.External.Lib
+      dependencies:
+        - almanakk-lib == 1.1.6
+      cpp-options: -DUSE_EXTERNAL
 
 executables:
   almanakk-cli:

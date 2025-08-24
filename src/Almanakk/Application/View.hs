@@ -4,13 +4,26 @@ module Almanakk.Application.View (
     , localTimeToString
     , localDateToString
     , localTimeFloor
+    , AlmanakkEventEntry(..)
 ) where
 
 import Data.Time
 import Data.Time(utctDay)
-import Almanakk.Application.AppContext
-import Almanakk.Almanakk
+import Almanakk.Application.Phase.Internal
 
+
+
+data AlmanakkEventEntry = AlmanakkEventEntry { 
+    entryTime2 :: LocalTime,
+    cellestialObject2 :: String,
+    cellestialPhaseEvent2 :: LunarPhaseEvent } deriving (Show) 
+
+instance Ord AlmanakkEventEntry where 
+    compare x y = compare (entryTime2 x) (entryTime2 y)
+
+instance Eq AlmanakkEventEntry where
+    x == y = (entryTime2 x) ==  (entryTime2 y)  
+    x /= y = (entryTime2 x) /=  (entryTime2 y) 
 
 localTimeToString :: LocalTime -> String
 localTimeToString (LocalTime _ (TimeOfDay h m _)) = show h ++ "h" ++ show (floorToNearest m 5) ++ "m"

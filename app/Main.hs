@@ -11,13 +11,13 @@ import Data.Time.Clock
 import Data.Time.LocalTime
 import Text.Read
 import Options.Applicative
-import Almanakk.Phase.Moon
 import Almanakk.Application.Version
 import Almanakk.Application.View 
 import Almanakk.Application.Ephemeris
 import Almanakk.Application.Phase
 import Almanakk.Application.Calendar (calendarMainFromTime)
-import Almanakk.Almanakk
+import Almanakk.Application.External
+import Almanakk.Application.Phase.Internal 
 
 
 data AlmanakkArgs = EphArg Double Double String | PhaseArg String | CalendarArg String
@@ -38,16 +38,16 @@ calendarMain = do
     t <- getCurrentTime
     calendarMainFromTime t
 
+
 phaseMain :: Maybe Int -> IO()
 phaseMain tzInt = do
     t <- getCurrentTime
     tzsystem <- getTimeZone t
-    let moonPh = MoonPhase t
     let tz = case tzInt of 
                 (Nothing) -> tzsystem
                 (Just tza) -> hoursToTimeZone tza
-    let aeeList = celPhaseResultToAee tz [(New, (new moonPh)), (FirstQuarter, (firstQuarter moonPh)), (Full, (full moonPh)), (LastQuarter, (lastQuarter moonPh))]
-    let phse = phase moonPh
+    let aeeList = celPhaseResultToAee tz [(NewMoon, (lunarPhaseNew t)), (FirstQuarterMoon, (lunarPhaseFirstQuarter t)), (FullMoon, (lunarPhaseFull t)), (LastQuarterMoon, (lunarPhaseLastQuarter t))]
+    let phse = lunarPhase t
     composeResultPhase (sort aeeList) [("Lunar phase",  cellestialPhaseToStr phse)]
 
 ephemerisMain :: Double -> Double -> Maybe Int -> IO()
@@ -78,7 +78,7 @@ parser = subparser
       <> command "phase" (addInfo parserPhase  "Calculate the lunar phase. ")
       <> command "calendar" (addInfo parserCalendar  "Calculate the astronomical calendar. "))
 
-composeResultPhase :: [AlmanacEventEntry]
+composeResultPhase :: [AlmanakkEventEntry]
     -> [(String, String)]
     -> IO()
 composeResultPhase aee phse = 

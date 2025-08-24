@@ -5,14 +5,9 @@ module Almanakk.Application.Calendar (
 import Data.Time
 import Data.List (sort)
 import Data.Time.Calendar
-import Almanakk.Calendar (dateOfEaster)
 import Almanakk.Application.View
-import Almanakk.Orbit.Equinox
-import Almanakk.Orbit.Solstice
-import Almanakk.Almanakk
-import Almanakk.Application.AppContext
-import Almanakk.Orbit.Apsis
-import Almanakk.CellestialSystem 
+import Almanakk.Application.External
+import Almanakk.Application.Calendar.Internal
 
 data CalendarEntry = 
     CalendarEntry {
@@ -59,7 +54,7 @@ compareCalendarEntries (CalendarEntryTime _ (UTCTime day1 _)) (CalendarEntry _ d
 
 data CalendarCollection = CalendarCollection {
     calendarCollection :: [CalendarEntry],
-    calendarEvent :: (Either AppContext UTCTime, String),
+    calendarEvent :: (Either String UTCTime, String),
     ccTimeZone :: TimeZone}
 
 calendarMainFromTime :: UTCTime -> IO()
@@ -75,7 +70,7 @@ calendarMainFromTime t = do
 
     -- Current year
     let cy = fromIntegral $ currentYear t
-                                       
+
     -- Add astronomical days
     let collections = [
             {-- 
@@ -83,38 +78,38 @@ calendarMainFromTime t = do
             equinox signature:
             equinox :: Equinox -> Int ->  Either AppContext UTCTime
             -}
-            CalendarCollection [] (equinox Northward cy, "Equinox northward ") tzsystem,
-            CalendarCollection [] (equinox Southward cy, "Equinox southward ") tzsystem, 
+            CalendarCollection [] (equinoxNorthward cy, "Equinox northward ") tzsystem,
+            CalendarCollection [] (equinoxSouthward cy, "Equinox southward ") tzsystem, 
             {-- 
             Solstice of the current year:
             solstice signature:
             solstice :: Solstice -> Int ->  Either AppContext UTCTime
             -}
-            CalendarCollection [] (solstice Northern cy, "Solstice northern ") tzsystem, 
-            CalendarCollection [] (solstice Southern cy, "Solstice southern ") tzsystem, 
-            
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Mercury) t, "Perihelion, Mercury ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Venus) t, "Perihelion, Venus ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Earth) t, "Perihelion, Earth ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Mars) t, "Perihelion, Mars ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Jupiter) t, "Perihelion, Jupiter ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Saturn) t, "Perihelion, Saturn ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Uranus) t, "Perihelion, Uranus ") tzsystem,
-            CalendarCollection [] (perihelion (CelestialBodySolarSystem Neptune) t, "Perihelion, Neptune ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Mercury) t, "Aphelion, Mercury ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Venus) t, "Aphelion, Venus ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Earth) t, "Aphelion, Earth ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Mars) t, "Aphelion, Mars ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Jupiter) t, "Aphelion, Jupiter ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Saturn) t, "Aphelion, Saturn ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Uranus) t, "Aphelion, Uranus ") tzsystem,
-            CalendarCollection [] (aphelion (CelestialBodySolarSystem Neptune) t, "Aphelion, Neptune ") tzsystem]
+            CalendarCollection [] (solsticeNorthern cy, "Solstice northern ") tzsystem, 
+            CalendarCollection [] (solsticeSouthern cy, "Solstice southern ") tzsystem,             
+
+            CalendarCollection [] (planetPerihelion PlanetMercury t, "Perihelion, Mercury ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetVenus t, "Perihelion, Venus ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetEarth t, "Perihelion, Earth ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetMars t, "Perihelion, Mars ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetJupiter t, "Perihelion, Jupiter ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetSaturn t, "Perihelion, Saturn ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetUranus t, "Perihelion, Uranus ") tzsystem,
+            CalendarCollection [] (planetPerihelion PlanetNeptune t, "Perihelion, Neptune ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetMercury t, "Aphelion, Mercury ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetVenus t, "Aphelion, Venus ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetEarth t, "Aphelion, Earth ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetMars t, "Aphelion, Mars ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetJupiter t, "Aphelion, Jupiter ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetSaturn t, "Aphelion, Saturn ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetUranus t, "Aphelion, Uranus ") tzsystem,
+            CalendarCollection [] (planetAphelion PlanetNeptune t, "Aphelion, Neptune ") tzsystem]
 
 
 
     let collectionResult = foldl 
             joinCalendarCollection 
-            (CalendarCollection (getCalendarEntries doeList) (Left (addInfoToContext "_" Nothing), "") tzsystem) 
+            (CalendarCollection (getCalendarEntries doeList) (Left ("_"), "") tzsystem) 
             collections
 
     let calEntriesStr = calendarEntriesToStr tzsystem $ sort $ getCalendarEntriesFiltered t (calendarCollection collectionResult)
@@ -136,7 +131,7 @@ getDateOfEasterList t = return (getDateOfEaster t)
 
 getDateOfEaster :: UTCTime -> [CalendarEntry]
 getDateOfEaster t = easterEntry
-    where doe = case (dateOfEaster t) of
+    where doe = case (easter t) of
               -- dateOfEaster calculates the day of easter from the year in t
               (Left _) -> Nothing
               (Right d) -> d
