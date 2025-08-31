@@ -84,7 +84,7 @@ executables:
 
 tests:
   almanakk-cli-test:
-    main:                Spec.hs
+    main:                AlmanakkCliTest.hs
     source-dirs:         test
     ghc-options:
     - -threaded
@@ -92,3 +92,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - almanakk-cli
+    - HUnit == 1.6.2.0
