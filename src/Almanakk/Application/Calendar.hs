@@ -41,7 +41,7 @@ instance Ord CalendarEntry where
     compare x y = compareCalendarEntries x y
 
 
--- TODO: fix the instance of Eq, similar to compare
+-- TODO: fix the instance of Eq, similar to compare in View.hs
 instance Eq CalendarEntry where
     x == y = (calendarEntryDay x) == (calendarEntryDay y)
     x == y = (calendarEntryTime x) == (calendarEntryTime y)

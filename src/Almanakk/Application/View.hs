@@ -4,6 +4,7 @@ module Almanakk.Application.View (
     , localTimeToString
     , localDateToString
     , localTimeFloor
+    , cellestialPhaseEvent2
     , AlmanakkEventEntry(..)
 ) where
 

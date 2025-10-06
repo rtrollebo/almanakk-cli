@@ -5,7 +5,7 @@ module Almanakk.Application.Phase.Internal (
 
 
 data LunarPhase = LunarWaxingCrescent | LunarWaxingGibbous | LunarWaningGibbous | LunarWaningCrescent deriving (Eq)
-data LunarPhaseEvent = NewMoon | FirstQuarterMoon | FullMoon | LastQuarterMoon 
+data LunarPhaseEvent = NewMoon | FirstQuarterMoon | FullMoon | LastQuarterMoon deriving (Eq)
 
 
 instance Show LunarPhaseEvent where
