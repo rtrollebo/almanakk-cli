@@ -4,7 +4,7 @@ module Almanakk.Application.View (
     , localTimeToString
     , localDateToString
     , localTimeFloor
-    , cellestialPhaseEvent2
+    , cellestialPhaseEvent
     , AlmanakkEventEntry(..)
 ) where
 
@@ -15,16 +15,16 @@ import Almanakk.Application.Phase.Internal
 
 
 data AlmanakkEventEntry = AlmanakkEventEntry { 
-    entryTime2 :: LocalTime,
-    cellestialObject2 :: String,
-    cellestialPhaseEvent2 :: LunarPhaseEvent } deriving (Show) 
+    entryTime :: LocalTime,
+    cellestialObject :: String,
+    cellestialPhaseEvent :: LunarPhaseEvent } deriving (Show) 
 
 instance Ord AlmanakkEventEntry where 
-    compare x y = compare (entryTime2 x) (entryTime2 y)
+    compare x y = compare (entryTime x) (entryTime y)
 
 instance Eq AlmanakkEventEntry where
-    x == y = (entryTime2 x) ==  (entryTime2 y)  
-    x /= y = (entryTime2 x) /=  (entryTime2 y) 
+    x == y = (entryTime x) ==  (entryTime y)  
+    x /= y = (entryTime x) /=  (entryTime y) 
 
 localTimeToString :: LocalTime -> String
 localTimeToString (LocalTime _ (TimeOfDay h m _)) = show h ++ "h" ++ show (floorToNearest m 5) ++ "m"
