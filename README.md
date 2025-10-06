@@ -12,13 +12,17 @@ This is the almanakk command line program, based on the almanakk-lib library. Se
 
 To build `almanakk-cli` in standard way, the `almanakk-lib` library must be present in `./lib` folder, otherwise build errors will occur. 
 
-    zsh build
+    zsh build.zsh
 
 To build `almanakk-cli` with `almanakk-lib` mocked.
 
-    zsh build mock
+    zsh build.zsh mock
 
 The purpose of the mock build is to test application functions, from the github project, without the dependency library present. 
+
+To execute tests, run the standard stack command
+
+    stack test
 
 Static builds of this cli program with the library are available in [rtrollebo.github.io/documentation](https://rtrollebo.github.io/documentation/)
 
