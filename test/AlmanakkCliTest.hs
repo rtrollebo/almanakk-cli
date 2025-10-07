@@ -17,7 +17,7 @@ aee = [
   (AlmanakkEventEntry (utcToLocalTime timeZone (UTCTime (fromGregorian 2025 10 17) (secondsToDiffTime 0))) "Moon" FirstQuarterMoon)
   ]
 
-testApp = TestCase $ assertEqual "AlmanakkEventEntry sort test" (cellestialPhaseEvent (head (sort aee))) NewMoon
+testApp = TestCase $ assertEqual "AlmanakkEventEntry sort test" (cellestialPhaseEvent $ head  $ sort  aee) NewMoon
 
 tests = TestList [TestLabel "AlmanakkEventEntry sort test" testApp]
 
