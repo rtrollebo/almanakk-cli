@@ -1,0 +1,22 @@
+name: almanakk-cli
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+    steps:
+    - uses: actions/checkout@v4 
+    - name: Setup Haskell
+      uses: haskell-actions/setup@v2
+      with:
+        ghc-version: '9.12.2' 
+        stack-version: '3.7.1' 
+    - name: Build almanakk-cli
+      run: stack build
+    - name: Run tests
+      run: stack test
