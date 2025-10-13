@@ -2,7 +2,7 @@
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/rtrollebo/almanakk-cli)
 ![GitHub last commit](https://img.shields.io/github/last-commit/rtrollebo/almanakk-cli)
-![test status](https://github.com/rtrollebo/almanakk-cli/actions/workflows/workflow.yml/badge.svg)
+[![almanakk-cli](https://github.com/rtrollebo/almanakk-cli/actions/workflows/workflow.yml/badge.svg)](https://github.com/rtrollebo/almanakk-cli/actions/workflows/workflow.yml)
 
 <br/>
 <p align="center">
