@@ -4,7 +4,6 @@ module Almanakk.Application.Calendar (
 
 import Data.Time
 import Data.List (sort)
-import Data.Time.Calendar
 import Almanakk.Application.View
 import Almanakk.Application.External
 import Almanakk.Application.Calendar.Internal
@@ -119,7 +118,7 @@ calendarMainFromTime t = do
 joinCalendarCollection :: CalendarCollection -> CalendarCollection -> CalendarCollection
 joinCalendarCollection cc1 cc2 = CalendarCollection value (ce, descr) (ccTimeZone cc2)
     where value = case ce of
-                (Left ctx) -> calendarCollection cc2
+                (Left _) -> calendarCollection cc2
                 (Right v) -> addEventToCalendar v (descr++(localTimeToString $ utcToLocalTime tzsystem v)) (calendarCollection cc1)
           ce = fst (calendarEvent cc2)
           descr = snd (calendarEvent cc2)
@@ -174,4 +173,4 @@ calendarEntriesToStr tz (CalendarEntry n d:xs) = "  " ++ toBlock (showDay d) ++ 
 currentYear :: UTCTime -> Integer
 currentYear t = case t of 
                 (UTCTime d _) -> case (toGregorian d) of 
-                                 (year, _, _) -> fromIntegral year
+                                 (year, _, _) -> year

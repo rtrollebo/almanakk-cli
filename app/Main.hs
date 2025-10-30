@@ -4,7 +4,6 @@ Almanakk Main module
 
 -}
 
-import System.Environment   
 import Control.Exception
 import Data.List (sort)
 import Data.Time.Clock
@@ -30,7 +29,7 @@ main = do
 processParser :: AlmanakkArgs -> IO ()
 processParser (EphArg lat lon tz) = catch (ephemerisMain lat lon (readMaybe tz)) handler
 processParser (PhaseArg tz) = catch (phaseMain  (readMaybe tz)) handler
-processParser (CalendarArg tz) = catch (calendarMain) handler
+processParser (CalendarArg _) = catch (calendarMain) handler
 processParser _ = return ()
 
 calendarMain :: IO()

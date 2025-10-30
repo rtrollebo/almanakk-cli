@@ -8,4 +8,4 @@ data Planet = PlanetMercury | PlanetVenus | PlanetEarth | PlanetMars | PlanetJup
 
 utcTimeToDayStr :: UTCTime -> String
 utcTimeToDayStr  (UTCTime d _) = case (toGregorian d) of
-    (y, m, d) -> show y ++ "-" ++ show m ++ "-" ++ show d
+    (y, m, _) -> show y ++ "-" ++ show m ++ "-" ++ show d

@@ -4,12 +4,10 @@ module Almanakk.Application.View (
     , localTimeToString
     , localDateToString
     , localTimeFloor
-    , cellestialPhaseEvent
     , AlmanakkEventEntry(..)
 ) where
 
 import Data.Time
-import Data.Time(utctDay)
 import Almanakk.Application.Phase.Internal
 
 

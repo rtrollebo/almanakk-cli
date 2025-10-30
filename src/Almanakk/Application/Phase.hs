@@ -5,7 +5,6 @@ module Almanakk.Application.Phase (
 ) where
 
 import Data.Time
-import Data.Time(utctDay)
 import Almanakk.Application.View
 import Almanakk.Application.Phase.Internal 
 
