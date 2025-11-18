@@ -5,6 +5,7 @@ module Almanakk.Application.View (
     , localDateToString
     , localTimeFloor
     , AlmanakkEventEntry(..)
+    , roundToTwoDecimals
 ) where
 
 import Data.Time
@@ -53,3 +54,6 @@ toBlock x
     | length x < width = x ++ replicate (width - (length x)) ' '
     | otherwise = take width x
         where width = 26
+
+roundToTwoDecimals :: Double -> String
+roundToTwoDecimals x = show (fromIntegral (round (x * 100)) / 100 :: Double)

@@ -18,8 +18,15 @@ aee = [
   ]
 
 testApp = TestCase $ assertEqual "AlmanakkEventEntry sort test" (cellestialPhaseEvent $ head  $ sort  aee) NewMoon
+testRounding1 = TestCase $ assertEqual "test rounding 1" (roundToTwoDecimals 0.1234) "0.12"
+testRounding2 = TestCase $ assertEqual "test rounding 2" (roundToTwoDecimals 0.1299) "0.13"
+testRounding3 = TestCase $ assertEqual "test rounding 3" (roundToTwoDecimals (-0.1299)) "-0.13"
 
-tests = TestList [TestLabel "AlmanakkEventEntry sort test" testApp]
+tests = TestList [
+  TestLabel "AlmanakkEventEntry sort test" testApp, 
+  TestLabel "test rounding 1" testRounding1,
+  TestLabel "test rounding 2" testRounding2,
+  TestLabel "test rounding 3" testRounding3]
 
 main :: IO ()
 main = do

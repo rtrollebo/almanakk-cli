@@ -35,7 +35,7 @@ composeResultEphemeris t lat lon tz sr ss deltaRise deltaSet =
             (toStr [
                 ("Date", utcTimeToDayStr t), 
                 ("Time zone", show tz),
-                ("Location", "lat " ++ show lat ++ " lon " ++ show lon)]) ++
+                ("Location", "lat: " ++ (roundToTwoDecimals lat) ++ ", lon: " ++ (roundToTwoDecimals lon))]) ++
             "\nSolar celestial rising and setting\n" ++
             (toStr [
                 ("Sunrise", processResult tz sr),
