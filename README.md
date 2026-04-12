@@ -11,6 +11,8 @@
 
 This is the almanakk command line program, based on the almanakk-lib library. See [doc](doc/index.html) for library API. 
 
+`almanakk-cli` is part of the [Horizons](https://horizons.no) application suite and the [Almanakk app](https://horizons.no/apps/almanakk).
+
 To build `almanakk-cli` in standard way, the `almanakk-lib` library must be present in `./lib` folder, otherwise build errors will occur. 
 
     zsh build.zsh
