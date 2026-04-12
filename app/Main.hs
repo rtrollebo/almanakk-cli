@@ -23,7 +23,10 @@ data AlmanakkArgs = EphArg Double Double String | PhaseArg String | CalendarArg 
 
 main :: IO ()
 main = do
-    p <- execParser (info (parser <**> helper <**> (simpleVersioner getVersion)) ( fullDesc <> progDesc "Almanakk CLI - astronomical calendar and ephemeris.\nrtrollebo@gmail.com (C) 2024 " <> header "Almanakk CLI" ) )
+    let infotext = "Almanakk CLI - astronomical calendar and ephemeris.\n\
+    \rtrollebo@gmail.com (C) 2026\n\
+    \horizons.no/apps/almanakk"
+    p <- execParser (info (parser <**> helper <**> (simpleVersioner getVersion)) ( fullDesc <> progDesc infotext <> header "Almanakk CLI" ) )
     processParser p
 
 processParser :: AlmanakkArgs -> IO ()
