@@ -170,7 +170,6 @@ calendarEntriesToStr tz (CalendarEntry n d:xs) = "  " ++ toBlock (showDay d) ++ 
     where showDay :: Day -> String
           showDay day = show day
 
-currentYear :: UTCTime -> Integer
-currentYear t = case t of 
-                (UTCTime d _) -> case (toGregorian d) of 
-                                 (year, _, _) -> year
+
+
+
