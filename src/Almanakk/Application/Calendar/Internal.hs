@@ -3,6 +3,8 @@ module Almanakk.Application.Calendar.Internal (
     , Planet(..)
     , currentYear
     , dstStart
+    , dstEnd
+    , dst
 ) where
 
 import Data.Time
@@ -19,13 +21,27 @@ currentYear t = case t of
                 (UTCTime d _) -> case (toGregorian d) of 
                                  (year, _, _) -> year
 
-dstStart :: UTCTime -> Day
-dstStart t = addDays offset lastDay
+
+dst :: UTCTime -> Bool
+dst (UTCTime d dt) 
+    | d >= start && d < end = True 
+    | otherwise = False 
     where 
-        lastDay = fromGregorian (currentYear t) 3 31
+        start = dstStart (UTCTime d dt) 
+        end = dstEnd (UTCTime d dt) 
+
+dstStart :: UTCTime -> Day
+dstStart t = dstBoundary t 3 31
+
+dstEnd :: UTCTime -> Day
+dstEnd t = dstBoundary t 10 31
+
+dstBoundary :: UTCTime -> Int -> Int -> Day
+dstBoundary t month day = addDays offset lastDay
+    where 
+        lastDay = fromGregorian (currentYear t) month day
         dow = dayOfWeek lastDay
         offset = dayOfWeekOffset dow
-
 
 dayOfWeekOffset :: DayOfWeek -> Integer
 dayOfWeekOffset Sunday = 0
